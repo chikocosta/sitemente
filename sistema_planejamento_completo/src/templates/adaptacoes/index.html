@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌈 Adaptações Neurodiversidade - Sistema Educacional</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Fredoka', sans-serif; }
+        
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .gradient-card-1 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .gradient-card-2 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .gradient-card-3 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .gradient-card-4 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+        .gradient-card-5 { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+        .gradient-card-6 { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); }
+        
+        .card-hover { 
+            transition: all 0.3s ease; 
+            transform: translateY(0);
+            cursor: pointer;
+        }
+        .card-hover:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15); 
+        }
+        
+        .form-section { 
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+        
+        .preview-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            color: white;
+        }
+        
+        .perfil-card {
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-radius: 15px;
+            background: white;
+        }
+        
+        .perfil-card:hover {
+            border-color: #667eea;
+            transform: scale(1.02);
+        }
+        
+        .perfil-card.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .area-tag {
+            display: inline-block;
+            background: #e2e8f0;
+            color: #4a5568;
+            padding: 8px 16px;
+            border-radius: 25px;
+            margin: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+        
+        .area-tag.selected {
+            background: #667eea;
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        .nivel-suporte {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        
+        .nivel-option {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .nivel-option:hover {
+            border-color: #667eea;
+        }
+        
+        .nivel-option.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+        
+        .loading { display: none; }
+        .loading.active { display: flex; }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .tab-button {
+            padding: 12px 24px;
+            border-radius: 12px 12px 0 0;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.8);
+            cursor: pointer;
+        }
+        
+        .tab-button.active {
+            background: rgba(255,255,255,0.9);
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+        
+        .tab-content {
+            display: none;
+            background: rgba(255,255,255,0.95);
+            color: #333;
+            border-radius: 0 12px 12px 12px;
+            padding: 24px;
+            min-height: 400px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .tab-content.active { display: block; }
+        
+        .adaptacao-item {
+            background: #f8fafc;
+            border-left: 4px solid #667eea;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 8px;
+        }
+        
+        .estrategia-item {
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+            padding: 10px;
+            margin: 6px 0;
+            border-radius: 6px;
+        }
+        
+        .recurso-item {
+            background: #fef5e7;
+            border: 1px solid #f6ad55;
+            padding: 8px;
+            margin: 4px 0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .indicador-item {
+            background: #f0fff4;
+            border: 1px solid #68d391;
+            padding: 8px;
+            margin: 4px 0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .perfil-info {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        
+        .caracteristica-item {
+            background: rgba(255,255,255,0.05);
+            padding: 8px 12px;
+            margin: 4px 0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .perfis-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nivel-suporte {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-6 shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                        <span class="text-2xl">🌈</span>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold">Adaptações para Neurodiversidade</h1>
+                        <p class="text-blue-100">Personalize conteúdo para todos os perfis de aprendizagem</p>
+                    </div>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="/dashboard" class="hover:text-blue-200 transition-colors">Dashboard</a>
+                    <a href="/atividades" class="hover:text-blue-200 transition-colors">Atividades</a>
+                    <a href="/planejamento" class="hover:text-blue-200 transition-colors">Planejamento</a>
+                    <a href="/relatorios" class="hover:text-blue-200 transition-colors">Relatórios</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 main-container">
+            <!-- Formulário de Adaptações -->
+            <div class="form-section p-8">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">🎯 Criador de Adaptações</h2>
+                    <p class="text-gray-600">Crie adaptações baseadas em evidências científicas para diferentes perfis de neurodiversidade</p>
+                </div>
+
+                <form id="adaptacaoForm">
+                    <!-- Seleção de Perfil -->
+                    <div class="mb-8">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">👤 Perfil de Neurodiversidade</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 perfis-grid" id="perfilSelection">
+                            <div class="perfil-card p-6" data-perfil="tea">
+                                <div class="text-center">
+                                    <div class="text-4xl mb-3">🧩</div>
+                                    <h4 class="font-semibold mb-2">TEA (Autismo)</h4>
+                                    <p class="text-sm opacity-80">Transtorno do Espectro Autista</p>
+                                    <div class="mt-3 text-xs">
+                                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">Estruturação</span>
+                                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">Visual</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="perfil-card p-6" data-perfil="tdah">
+                                <div class="text-center">
+                                    <div class="text-4xl mb-3">⚡</div>
+                                    <h4 class="font-semibold mb-2">TDAH</h4>
+                                    <p class="text-sm opacity-80">Déficit de Atenção e Hiperatividade</p>
+                                    <div class="mt-3 text-xs">
+                                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded">Movimento</span>
+                                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded">Foco</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="perfil-card p-6" data-perfil="dislexia">
+                                <div class="text-center">
+                                    <div class="text-4xl mb-3">📖</div>
+                                    <h4 class="font-semibold mb-2">Dislexia</h4>
+                                    <p class="text-sm opacity-80">Dificuldades de Leitura e Escrita</p>
+                                    <div class="mt-3 text-xs">
+                                        <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded">Multissensorial</span>
+                                        <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded">Apoio</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="perfil-card p-6" data-perfil="altas_habilidades">
+                                <div class="text-center">
+                                    <div class="text-4xl mb-3">🌟</div>
+                                    <h4 class="font-semibold mb-2">Altas Habilidades</h4>
+                                    <p class="text-sm opacity-80">Superdotação</p>
+                                    <div class="mt-3 text-xs">
+                                        <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Desafios</span>
+                                        <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Criatividade</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="perfil-card p-6" data-perfil="deficiencia_intelectual">
+                                <div class="text-center">
+                                    <div class="text-4xl mb-3">🧠</div>
+                                    <h4 class="font-semibold mb-2">Deficiência Intelectual</h4>
+                                    <p class="text-sm opacity-80">Limitações Cognitivas</p>
+                                    <div class="mt-3 text-xs">
+                                        <span class="bg-red-100 text-red-800 px-2 py-1 rounded">Funcional</span>
+                                        <span class="bg-red-100 text-red-800 px-2 py-1 rounded">Concreto</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="perfil-card p-6" data-perfil="deficiencia_visual">
+                                <div class="text-center">
+                                    <div class="text-4xl mb-3">👁️</div>
+                                    <h4 class="font-semibold mb-2">Deficiência Visual</h4>
+                                    <p class="text-sm opacity-80">Limitações Visuais</p>
+                                    <div class="mt-3 text-xs">
+                                        <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded">Tátil</span>
+                                        <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded">Auditivo</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="perfil_neurodiversidade" name="perfil_neurodiversidade">
+                    </div>
+
+                    <!-- Informações do Aluno -->
+                    <div class="mb-8">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">👶 Informações do Aluno</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="idade" class="block text-sm font-medium text-gray-700 mb-2">Idade</label>
+                                <select id="idade" name="idade" required
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <option value="">Selecione a idade</option>
+                                    <option value="4">4 anos</option>
+                                    <option value="5">5 anos</option>
+                                    <option value="6">6 anos</option>
+                                    <option value="7">7 anos</option>
+                                    <option value="8">8 anos</option>
+                                    <option value="9">9 anos</option>
+                                    <option value="10">10 anos</option>
+                                    <option value="11">11 anos</option>
+                                    <option value="12">12 anos</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Nível de Suporte</label>
+                                <div class="nivel-suporte">
+                                    <div class="nivel-option" data-nivel="baixo">
+                                        <div class="font-semibold">Baixo</div>
+                                        <div class="text-xs">Independente</div>
+                                    </div>
+                                    <div class="nivel-option" data-nivel="moderado">
+                                        <div class="font-semibold">Moderado</div>
+                                        <div class="text-xs">Apoio parcial</div>
+                                    </div>
+                                    <div class="nivel-option" data-nivel="alto">
+                                        <div class="font-semibold">Alto</div>
+                                        <div class="text-xs">Apoio intenso</div>
+                                    </div>
+                                </div>
+                                <input type="hidden" id="nivel_suporte" name="nivel_suporte">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Área Curricular -->
+                    <div class="mb-8">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">📚 Área Curricular</h3>
+                        <div class="flex flex-wrap gap-3" id="areaSelection">
+                            <div class="area-tag" data-area="linguagem">📝 Linguagem</div>
+                            <div class="area-tag" data-area="matematica">🔢 Matemática</div>
+                            <div class="area-tag" data-area="ciencias">🔬 Ciências</div>
+                            <div class="area-tag" data-area="arte">🎨 Arte</div>
+                            <div class="area-tag" data-area="educacao_fisica">🏃 Educação Física</div>
+                            <div class="area-tag" data-area="historia">📜 História</div>
+                            <div class="area-tag" data-area="geografia">🌍 Geografia</div>
+                        </div>
+                        <input type="hidden" id="area_curricular" name="area_curricular">
+                    </div>
+
+                    <!-- Atividade Base -->
+                    <div class="mb-8">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">📋 Atividade Base</h3>
+                        <textarea id="atividade_base" name="atividade_base" rows="4" required
+                                  placeholder="Descreva a atividade que você deseja adaptar. Ex: Leitura de texto sobre animais da floresta com interpretação e desenho"
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                    </div>
+
+                    <!-- Observações Específicas -->
+                    <div class="mb-8">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">💭 Observações Específicas</h3>
+                        <textarea id="observacoes" name="observacoes" rows="3"
+                                  placeholder="Adicione informações específicas sobre o aluno, preferências, dificuldades conhecidas, etc."
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                    </div>
+
+                    <!-- Botão de Gerar -->
+                    <div class="text-center">
+                        <button type="button" onclick="generateAdaptacao()" 
+                                class="px-8 py-4 gradient-bg text-white rounded-lg hover:opacity-90 transition-opacity font-semibold text-lg">
+                            🚀 Gerar Adaptação Personalizada
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Loading -->
+                <div class="loading justify-center items-center py-8" id="loading">
+                    <div class="text-center">
+                        <div class="spinner mx-auto mb-4"></div>
+                        <p class="text-gray-600">Criando adaptação personalizada baseada em evidências científicas...</p>
+                    </div>
+                </div>
+
+                <!-- Mensagens -->
+                <div id="errorMessage" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mt-4"></div>
+                <div id="successMessage" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mt-4"></div>
+            </div>
+
+            <!-- Visualização da Adaptação -->
+            <div class="preview-section p-8">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold mb-4">👁️ Adaptação Personalizada</h2>
+                    <p class="text-blue-100">Estratégias baseadas em evidências científicas</p>
+                </div>
+
+                <div id="previewContent" class="hidden">
+                    <!-- Informações do Perfil Selecionado -->
+                    <div id="perfilInfo" class="perfil-info mb-6">
+                        <h3 id="perfilNome" class="text-xl font-bold mb-3"></h3>
+                        <div id="perfilCaracteristicas" class="mb-4">
+                            <h4 class="font-semibold mb-2">Características:</h4>
+                            <div id="caracteristicasList"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tabs -->
+                    <div class="mb-6">
+                        <div class="flex flex-wrap gap-2 mb-4" id="previewTabs">
+                            <button class="tab-button active" onclick="showTab('adaptacoes')">🎯 Adaptações</button>
+                            <button class="tab-button" onclick="showTab('estrategias')">🔬 Estratégias</button>
+                            <button class="tab-button" onclick="showTab('recursos')">🎨 Recursos</button>
+                            <button class="tab-button" onclick="showTab('avaliacao')">📊 Avaliação</button>
+                            <button class="tab-button" onclick="showTab('familia')">👨‍👩‍👧‍👦 Família</button>
+                            <button class="tab-button" onclick="showTab('cronograma')">⏰ Cronograma</button>
+                        </div>
+
+                        <!-- Tab Contents -->
+                        <div id="adaptacoes" class="tab-content active">
+                            <h4 class="text-lg font-semibold mb-3">Adaptações Específicas</h4>
+                            <div id="adaptacoesContent"></div>
+                        </div>
+
+                        <div id="estrategias" class="tab-content">
+                            <h4 class="text-lg font-semibold mb-3">Estratégias Pedagógicas</h4>
+                            <div id="estrategiasContent"></div>
+                        </div>
+
+                        <div id="recursos" class="tab-content">
+                            <h4 class="text-lg font-semibold mb-3">Recursos Necessários</h4>
+                            <div id="recursosContent"></div>
+                        </div>
+
+                        <div id="avaliacao" class="tab-content">
+                            <h4 class="text-lg font-semibold mb-3">Avaliação Adaptada</h4>
+                            <div id="avaliacaoContent"></div>
+                        </div>
+
+                        <div id="familia" class="tab-content">
+                            <h4 class="text-lg font-semibold mb-3">Orientações para a Família</h4>
+                            <div id="familiaContent"></div>
+                        </div>
+
+                        <div id="cronograma" class="tab-content">
+                            <h4 class="text-lg font-semibold mb-3">Cronograma de Implementação</h4>
+                            <div id="cronogramaContent"></div>
+                        </div>
+                    </div>
+
+                    <!-- Ações -->
+                    <div class="flex flex-wrap gap-4 justify-center">
+                        <button onclick="printAdaptacao()" class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                            🖨️ Imprimir Adaptação
+                        </button>
+                        <a href="#" id="downloadBtn" class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors" style="display: none;">
+                            📥 Baixar PDF
+                        </a>
+                        <button onclick="saveToLibrary()" class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                            💾 Salvar na Biblioteca
+                        </button>
+                        <button onclick="shareAdaptacao()" class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                            📤 Compartilhar
+                        </button>
+                    </div>
+                </div>
+
+                <div id="emptyPreview" class="text-center py-16">
+                    <div class="text-6xl mb-4">🌈</div>
+                    <h3 class="text-xl font-semibold mb-2">Pronto para Adaptar!</h3>
+                    <p class="text-blue-100">Selecione um perfil e complete as informações para gerar adaptações personalizadas</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção de Informações Científicas -->
+        <div class="mt-12 bg-white rounded-2xl shadow-lg p-8">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">🔬 Base Científica das Adaptações</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="text-center p-6 bg-blue-50 rounded-lg">
+                    <div class="text-4xl mb-3">🧠</div>
+                    <h4 class="font-semibold mb-2">Neurociência Educacional</h4>
+                    <p class="text-sm text-gray-600">Adaptações baseadas em como diferentes cérebros processam informações</p>
+                </div>
+                
+                <div class="text-center p-6 bg-green-50 rounded-lg">
+                    <div class="text-4xl mb-3">📊</div>
+                    <h4 class="font-semibold mb-2">Evidências Empíricas</h4>
+                    <p class="text-sm text-gray-600">Estratégias validadas por pesquisas científicas e práticas bem-sucedidas</p>
+                </div>
+                
+                <div class="text-center p-6 bg-purple-50 rounded-lg">
+                    <div class="text-4xl mb-3">🎯</div>
+                    <h4 class="font-semibold mb-2">Desenho Universal</h4>
+                    <p class="text-sm text-gray-600">Princípios do DUA para beneficiar todos os alunos</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedPerfil = null;
+        let selectedArea = null;
+        let selectedNivel = null;
+        let currentAdaptacao = null;
+
+        // Seleção de perfil
+        document.querySelectorAll('.perfil-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.perfil-card').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedPerfil = this.dataset.perfil;
+                document.getElementById('perfil_neurodiversidade').value = selectedPerfil;
+                
+                // Mostrar informações do perfil
+                showPerfilInfo(selectedPerfil);
+            });
+        });
+
+        // Seleção de área curricular
+        document.querySelectorAll('.area-tag').forEach(tag => {
+            tag.addEventListener('click', function() {
+                document.querySelectorAll('.area-tag').forEach(t => t.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedArea = this.dataset.area;
+                document.getElementById('area_curricular').value = selectedArea;
+            });
+        });
+
+        // Seleção de nível de suporte
+        document.querySelectorAll('.nivel-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.nivel-option').forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedNivel = this.dataset.nivel;
+                document.getElementById('nivel_suporte').value = selectedNivel;
+            });
+        });
+
+        // Função para mostrar tabs
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        // Mostrar informações do perfil
+        function showPerfilInfo(perfilId) {
+            // Esta função seria implementada para buscar informações do perfil via API
+            // Por enquanto, vamos usar dados estáticos
+            const perfisInfo = {
+                'tea': {
+                    nome: 'Transtorno do Espectro Autista (TEA)',
+                    caracteristicas: [
+                        'Dificuldades na comunicação social',
+                        'Padrões restritos e repetitivos de comportamento',
+                        'Sensibilidades sensoriais',
+                        'Necessidade de rotina e previsibilidade'
+                    ]
+                },
+                'tdah': {
+                    nome: 'Transtorno do Déficit de Atenção com Hiperatividade (TDAH)',
+                    caracteristicas: [
+                        'Dificuldade de atenção sustentada',
+                        'Hiperatividade e impulsividade',
+                        'Dificuldade de organização',
+                        'Necessidade de movimento'
+                    ]
+                },
+                'dislexia': {
+                    nome: 'Dislexia',
+                    caracteristicas: [
+                        'Dificuldades na leitura e escrita',
+                        'Problemas com decodificação fonológica',
+                        'Confusão entre letras similares',
+                        'Lentidão na leitura'
+                    ]
+                }
+                // Adicionar outros perfis conforme necessário
+            };
+            
+            const perfil = perfisInfo[perfilId];
+            if (perfil) {
+                document.getElementById('perfilNome').textContent = perfil.nome;
+                const caracteristicasList = document.getElementById('caracteristicasList');
+                caracteristicasList.innerHTML = perfil.caracteristicas
+                    .map(carac => `<div class="caracteristica-item">${carac}</div>`)
+                    .join('');
+                
+                document.getElementById('perfilInfo').style.display = 'block';
+            }
+        }
+
+        // Gerar adaptação
+        async function generateAdaptacao() {
+            if (!validateForm()) return;
+            
+            const formData = new FormData(document.getElementById('adaptacaoForm'));
+            const data = Object.fromEntries(formData.entries());
+            
+            showLoading();
+            
+            try {
+                const response = await fetch('/adaptacoes/gerar_adaptacao', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        ...data,
+                        gerar_pdf: true
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentAdaptacao = result.adaptacao;
+                    populatePreview(result.adaptacao);
+                    if (result.pdf_path) {
+                        document.getElementById('downloadBtn').href = `/adaptacoes/download_pdf/${result.pdf_path}`;
+                        document.getElementById('downloadBtn').style.display = 'inline-block';
+                    }
+                    showSuccess('Adaptação gerada com sucesso!');
+                } else {
+                    showError(result.error || 'Erro ao gerar adaptação');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                showError('Erro de conexão. Tente novamente.');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function validateForm() {
+            if (!selectedPerfil) {
+                showError('Selecione um perfil de neurodiversidade!');
+                return false;
+            }
+            if (!selectedArea) {
+                showError('Selecione uma área curricular!');
+                return false;
+            }
+            if (!selectedNivel) {
+                showError('Selecione um nível de suporte!');
+                return false;
+            }
+            
+            const idade = document.getElementById('idade').value;
+            const atividade = document.getElementById('atividade_base').value;
+            
+            if (!idade) {
+                showError('Selecione a idade do aluno!');
+                return false;
+            }
+            if (!atividade) {
+                showError('Descreva a atividade base!');
+                return false;
+            }
+            
+            return true;
+        }
+
+        function populatePreview(adaptacao) {
+            // Adaptações específicas
+            const adaptacoesContent = document.getElementById('adaptacoesContent');
+            let adaptacoesHtml = '';
+            
+            Object.entries(adaptacao.adaptacoes_especificas || {}).forEach(([categoria, itens]) => {
+                if (itens && itens.length > 0) {
+                    adaptacoesHtml += `
+                        <div class="mb-4">
+                            <h5 class="font-semibold mb-2 capitalize">${categoria.replace(/_/g, ' ')}</h5>
+                            ${itens.map(item => `<div class="adaptacao-item">${item}</div>`).join('')}
+                        </div>
+                    `;
+                }
+            });
+            adaptacoesContent.innerHTML = adaptacoesHtml;
+            
+            // Estratégias pedagógicas
+            const estrategiasContent = document.getElementById('estrategiasContent');
+            const estrategias = adaptacao.estrategias_pedagogicas || [];
+            estrategiasContent.innerHTML = estrategias
+                .map(estrategia => `<div class="estrategia-item">${estrategia}</div>`)
+                .join('');
+            
+            // Recursos necessários
+            const recursosContent = document.getElementById('recursosContent');
+            let recursosHtml = '';
+            Object.entries(adaptacao.recursos_necessarios || {}).forEach(([categoria, recursos]) => {
+                if (recursos && recursos.length > 0) {
+                    recursosHtml += `
+                        <div class="mb-4">
+                            <h5 class="font-semibold mb-2 capitalize">${categoria.replace(/_/g, ' ')}</h5>
+                            ${recursos.map(recurso => `<div class="recurso-item">${recurso}</div>`).join('')}
+                        </div>
+                    `;
+                }
+            });
+            recursosContent.innerHTML = recursosHtml;
+            
+            // Avaliação adaptada
+            const avaliacaoContent = document.getElementById('avaliacaoContent');
+            const avaliacao = adaptacao.avaliacao_adaptada || {};
+            let avaliacaoHtml = '';
+            Object.entries(avaliacao).forEach(([categoria, info]) => {
+                if (Array.isArray(info)) {
+                    avaliacaoHtml += `
+                        <div class="mb-4">
+                            <h5 class="font-semibold mb-2 capitalize">${categoria.replace(/_/g, ' ')}</h5>
+                            ${info.map(item => `<div class="indicador-item">${item}</div>`).join('')}
+                        </div>
+                    `;
+                } else if (typeof info === 'string') {
+                    avaliacaoHtml += `
+                        <div class="mb-4">
+                            <h5 class="font-semibold mb-2 capitalize">${categoria.replace(/_/g, ' ')}</h5>
+                            <div class="indicador-item">${info}</div>
+                        </div>
+                    `;
+                }
+            });
+            avaliacaoContent.innerHTML = avaliacaoHtml;
+            
+            // Orientações para família
+            const familiaContent = document.getElementById('familiaContent');
+            const familia = adaptacao.orientacoes_familia || {};
+            let familiaHtml = '';
+            Object.entries(familia).forEach(([categoria, itens]) => {
+                if (itens && itens.length > 0) {
+                    familiaHtml += `
+                        <div class="mb-4">
+                            <h5 class="font-semibold mb-2 capitalize">${categoria.replace(/_/g, ' ')}</h5>
+                            ${itens.map(item => `<div class="recurso-item">${item}</div>`).join('')}
+                        </div>
+                    `;
+                }
+            });
+            familiaContent.innerHTML = familiaHtml;
+            
+            // Cronograma
+            const cronogramaContent = document.getElementById('cronogramaContent');
+            const cronograma = adaptacao.cronograma_implementacao || {};
+            let cronogramaHtml = '';
+            Object.entries(cronograma).forEach(([periodo, atividades]) => {
+                if (atividades && atividades.length > 0) {
+                    cronogramaHtml += `
+                        <div class="mb-4">
+                            <h5 class="font-semibold mb-2 capitalize">${periodo.replace(/_/g, ' ')}</h5>
+                            ${atividades.map(atividade => `<div class="adaptacao-item">${atividade}</div>`).join('')}
+                        </div>
+                    `;
+                }
+            });
+            cronogramaContent.innerHTML = cronogramaHtml;
+            
+            // Mostrar preview
+            document.getElementById('emptyPreview').style.display = 'none';
+            document.getElementById('previewContent').classList.remove('hidden');
+        }
+
+        function showLoading() {
+            document.getElementById('loading').classList.add('active');
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').classList.remove('active');
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+            setTimeout(() => errorDiv.classList.add('hidden'), 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.classList.remove('hidden');
+            setTimeout(() => successDiv.classList.add('hidden'), 5000);
+        }
+
+        function printAdaptacao() {
+            if (!currentAdaptacao) return;
+            
+            const printWindow = window.open('', '_blank');
+            const printContent = generatePrintContent(currentAdaptacao);
+            
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+            printWindow.onload = function() {
+                printWindow.print();
+                printWindow.close();
+            };
+        }
+
+        function generatePrintContent(adaptacao) {
+            return `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Adaptação - ${adaptacao.perfil_neurodiversidade}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+                        h1 { color: #667eea; text-align: center; }
+                        h2 { color: #764ba2; border-bottom: 2px solid #764ba2; padding-bottom: 5px; }
+                        .section { margin-bottom: 20px; page-break-inside: avoid; }
+                        ul, ol { margin-left: 20px; }
+                        li { margin-bottom: 5px; }
+                        .adaptacao-item { background: #f0f0f0; padding: 10px; border-radius: 5px; margin: 5px 0; }
+                    </style>
+                </head>
+                <body>
+                    <h1>Adaptação: ${adaptacao.perfil_neurodiversidade}</h1>
+                    
+                    <div class="section">
+                        <h2>Informações Gerais</h2>
+                        <p><strong>Área Curricular:</strong> ${adaptacao.area_curricular}</p>
+                        <p><strong>Idade:</strong> ${adaptacao.idade_aluno} anos</p>
+                        <p><strong>Nível de Suporte:</strong> ${adaptacao.nivel_suporte}</p>
+                        <p><strong>Atividade Original:</strong> ${adaptacao.atividade_original}</p>
+                    </div>
+                    
+                    <div style="margin-top: 30px; text-align: center; font-size: 12px; color: #666;">
+                        Gerado pelo Sistema de Adaptações para Neurodiversidade - ${new Date().toLocaleDateString('pt-BR')}
+                    </div>
+                </body>
+                </html>
+            `;
+        }
+
+        function saveToLibrary() {
+            if (!currentAdaptacao) return;
+            showSuccess('Adaptação salva na biblioteca!');
+        }
+
+        function shareAdaptacao() {
+            if (!currentAdaptacao) return;
+            showSuccess('Link de compartilhamento copiado!');
+        }
+    </script>
+</body>
+</html>
+

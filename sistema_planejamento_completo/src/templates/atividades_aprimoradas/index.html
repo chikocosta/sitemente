@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Sistema Completo de Planejamento Educacional - Clube da Mente</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Fredoka', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+        .pulse-animation { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
+        .bounce { animation: bounce 2s infinite; }
+        @keyframes bounce { 0%, 20%, 53%, 80%, 100% { transform: translate3d(0,0,0); } 40%, 43% { transform: translate3d(0,-30px,0); } 70% { transform: translate3d(0,-15px,0); } 90% { transform: translate3d(0,-4px,0); } }
+        .loading { display: none; }
+        .loading.active { display: block; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .perfil-card { border-left: 4px solid #3B82F6; }
+        .perfil-card.selected { border-left-color: #10B981; background-color: #F0FDF4; }
+        .orientacao-box { background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); }
+        .alerta-box { background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%); }
+        .sucesso-box { background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%); }
+        .info-box { background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%); }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header com Logotipo -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <img src="/static/images/logo.png" alt="Clube da Mente" class="h-16 w-16 rounded-lg bg-white p-2">
+                    <div>
+                        <h1 class="text-3xl font-bold">Sistema Completo de Planejamento Educacional</h1>
+                        <p class="text-blue-100">Orientações científicas para professores do ensino fundamental</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm text-blue-100">Baseado em evidências científicas</p>
+                    <p class="text-xs text-blue-200">BNCC • Neurociência • Pedagogia Inclusiva</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navegação Principal -->
+    <nav class="bg-white shadow-md border-b-2 border-blue-100">
+        <div class="container mx-auto px-4">
+            <div class="flex space-x-8">
+                <button onclick="showTab('gerador')" class="tab-btn py-4 px-6 text-blue-600 border-b-2 border-blue-600 font-semibold">
+                    🎯 Gerador de Atividades
+                </button>
+                <button onclick="showTab('guias')" class="tab-btn py-4 px-6 text-gray-600 hover:text-blue-600 font-semibold">
+                    📚 Guias para Professores
+                </button>
+                <button onclick="showTab('perfis')" class="tab-btn py-4 px-6 text-gray-600 hover:text-blue-600 font-semibold">
+                    👥 Perfis de Crianças
+                </button>
+                <button onclick="showTab('recursos')" class="tab-btn py-4 px-6 text-gray-600 hover:text-blue-600 font-semibold">
+                    🔬 Base Científica
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Conteúdo Principal -->
+    <main class="container mx-auto px-4 py-8">
+        
+        <!-- Tab: Gerador de Atividades -->
+        <div id="gerador" class="tab-content active">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                
+                <!-- Formulário de Criação -->
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <div class="flex items-center mb-6">
+                        <div class="bg-blue-100 p-3 rounded-full mr-4">
+                            <i data-lucide="target" class="w-6 h-6 text-blue-600"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800">Criar Atividade Personalizada</h2>
+                            <p class="text-gray-600">Sistema baseado em evidências científicas</p>
+                        </div>
+                    </div>
+
+                    <form id="atividadeForm" class="space-y-6">
+                        <!-- Informações da Criança -->
+                        <div class="bg-blue-50 p-6 rounded-lg">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-4 flex items-center">
+                                <i data-lucide="user" class="w-5 h-5 mr-2"></i>
+                                Informações da Criança
+                            </h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Nome da Criança</label>
+                                    <input type="text" id="nome_crianca" name="nome_crianca" required
+                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                           placeholder="Digite o nome da criança">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Idade</label>
+                                    <select id="idade" name="idade" required
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        <option value="">Selecione a idade</option>
+                                        <option value="4">4 anos</option>
+                                        <option value="5">5 anos</option>
+                                        <option value="6">6 anos</option>
+                                        <option value="7">7 anos</option>
+                                        <option value="8">8 anos</option>
+                                        <option value="9">9 anos</option>
+                                        <option value="10">10 anos</option>
+                                        <option value="11">11 anos</option>
+                                        <option value="12">12 anos</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Perfil da Criança -->
+                        <div class="bg-green-50 p-6 rounded-lg">
+                            <h3 class="text-lg font-semibold text-green-800 mb-4 flex items-center">
+                                <i data-lucide="brain" class="w-5 h-5 mr-2"></i>
+                                Perfil de Aprendizagem
+                                <span class="ml-2 text-sm bg-green-200 text-green-800 px-2 py-1 rounded-full">Essencial</span>
+                            </h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="perfil-card p-4 bg-white rounded-lg border cursor-pointer" onclick="selectPerfil('neurotipica_extrovertida', this)">
+                                    <div class="flex items-center mb-2">
+                                        <i data-lucide="users" class="w-5 h-5 text-blue-600 mr-2"></i>
+                                        <h4 class="font-semibold">Neurotípica Extrovertida</h4>
+                                    </div>
+                                    <p class="text-sm text-gray-600">Busca interação social, aprende em grupos, expressa-se verbalmente</p>
+                                    <div class="mt-2 text-xs text-blue-600">
+                                        ✓ Atividades colaborativas ✓ Discussões ✓ Apresentações
+                                    </div>
+                                </div>
+                                
+                                <div class="perfil-card p-4 bg-white rounded-lg border cursor-pointer" onclick="selectPerfil('neurotipica_introvertida', this)">
+                                    <div class="flex items-center mb-2">
+                                        <i data-lucide="book-open" class="w-5 h-5 text-purple-600 mr-2"></i>
+                                        <h4 class="font-semibold">Neurotípica Introvertida</h4>
+                                    </div>
+                                    <p class="text-sm text-gray-600">Prefere atividades individuais, processa internamente, observa antes de agir</p>
+                                    <div class="mt-2 text-xs text-purple-600">
+                                        ✓ Trabalho individual ✓ Reflexão ✓ Tempo para processar
+                                    </div>
+                                </div>
+                                
+                                <div class="perfil-card p-4 bg-white rounded-lg border cursor-pointer" onclick="selectPerfil('tea_nivel1', this)">
+                                    <div class="flex items-center mb-2">
+                                        <i data-lucide="puzzle" class="w-5 h-5 text-indigo-600 mr-2"></i>
+                                        <h4 class="font-semibold">TEA Nível 1 (Leve)</h4>
+                                    </div>
+                                    <p class="text-sm text-gray-600">Necessita rotinas, apoios visuais, interesses específicos</p>
+                                    <div class="mt-2 text-xs text-indigo-600">
+                                        ✓ Estrutura visual ✓ Rotinas ✓ Interesses especiais
+                                    </div>
+                                </div>
+                                
+                                <div class="perfil-card p-4 bg-white rounded-lg border cursor-pointer" onclick="selectPerfil('tdah_hiperativo', this)">
+                                    <div class="flex items-center mb-2">
+                                        <i data-lucide="zap" class="w-5 h-5 text-orange-600 mr-2"></i>
+                                        <h4 class="font-semibold">TDAH Hiperativo</h4>
+                                    </div>
+                                    <p class="text-sm text-gray-600">Necessita movimento, pausas frequentes, atividades dinâmicas</p>
+                                    <div class="mt-2 text-xs text-orange-600">
+                                        ✓ Movimento ✓ Pausas ✓ Atividades curtas
+                                    </div>
+                                </div>
+                                
+                                <div class="perfil-card p-4 bg-white rounded-lg border cursor-pointer" onclick="selectPerfil('dislexia', this)">
+                                    <div class="flex items-center mb-2">
+                                        <i data-lucide="type" class="w-5 h-5 text-red-600 mr-2"></i>
+                                        <h4 class="font-semibold">Dislexia</h4>
+                                    </div>
+                                    <p class="text-sm text-gray-600">Dificuldades com leitura/escrita, abordagem multissensorial</p>
+                                    <div class="mt-2 text-xs text-red-600">
+                                        ✓ Multissensorial ✓ Apoio visual ✓ Tempo extra
+                                    </div>
+                                </div>
+                                
+                                <div class="perfil-card p-4 bg-white rounded-lg border cursor-pointer" onclick="selectPerfil('altas_habilidades', this)">
+                                    <div class="flex items-center mb-2">
+                                        <i data-lucide="star" class="w-5 h-5 text-yellow-600 mr-2"></i>
+                                        <h4 class="font-semibold">Altas Habilidades</h4>
+                                    </div>
+                                    <p class="text-sm text-gray-600">Aprende rapidamente, necessita desafios, curiosidade intensa</p>
+                                    <div class="mt-2 text-xs text-yellow-600">
+                                        ✓ Desafios ✓ Projetos complexos ✓ Autonomia
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <input type="hidden" id="perfil_crianca" name="perfil_crianca" required>
+                        </div>
+
+                        <!-- Área de Foco -->
+                        <div class="bg-purple-50 p-6 rounded-lg">
+                            <h3 class="text-lg font-semibold text-purple-800 mb-4 flex items-center">
+                                <i data-lucide="target" class="w-5 h-5 mr-2"></i>
+                                Área de Desenvolvimento
+                            </h3>
+                            
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                <label class="flex items-center p-3 bg-white rounded-lg border cursor-pointer hover:bg-purple-50">
+                                    <input type="radio" name="area_foco" value="cognitivo" class="mr-3">
+                                    <div>
+                                        <div class="font-medium">🧠 Cognitivo</div>
+                                        <div class="text-xs text-gray-600">Raciocínio, memória</div>
+                                    </div>
+                                </label>
+                                
+                                <label class="flex items-center p-3 bg-white rounded-lg border cursor-pointer hover:bg-purple-50">
+                                    <input type="radio" name="area_foco" value="motor" class="mr-3">
+                                    <div>
+                                        <div class="font-medium">🤸 Motor</div>
+                                        <div class="text-xs text-gray-600">Coordenação, movimento</div>
+                                    </div>
+                                </label>
+                                
+                                <label class="flex items-center p-3 bg-white rounded-lg border cursor-pointer hover:bg-purple-50">
+                                    <input type="radio" name="area_foco" value="social" class="mr-3">
+                                    <div>
+                                        <div class="font-medium">👥 Social</div>
+                                        <div class="text-xs text-gray-600">Interação, cooperação</div>
+                                    </div>
+                                </label>
+                                
+                                <label class="flex items-center p-3 bg-white rounded-lg border cursor-pointer hover:bg-purple-50">
+                                    <input type="radio" name="area_foco" value="emocional" class="mr-3">
+                                    <div>
+                                        <div class="font-medium">❤️ Emocional</div>
+                                        <div class="text-xs text-gray-600">Autoconhecimento, regulação</div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Tipo de Atividade -->
+                        <div class="bg-orange-50 p-6 rounded-lg">
+                            <h3 class="text-lg font-semibold text-orange-800 mb-4 flex items-center">
+                                <i data-lucide="activity" class="w-5 h-5 mr-2"></i>
+                                Tipo de Atividade
+                            </h3>
+                            
+                            <select id="tipo_atividade" name="tipo_atividade" required
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                                <option value="">Selecione o tipo de atividade</option>
+                                <option value="escrita_criativa">✍️ Escrita Criativa - Desenvolvimento da expressão e comunicação</option>
+                                <option value="matematica_ludica">🔢 Matemática Lúdica - Raciocínio lógico e resolução de problemas</option>
+                                <option value="ciencias_experimentais">🔬 Ciências Experimentais - Investigação e descoberta</option>
+                                <option value="arte_expressiva">🎨 Arte Expressiva - Criatividade e autoexpressão</option>
+                                <option value="movimento_coordenacao">🤸 Movimento e Coordenação - Desenvolvimento motor</option>
+                                <option value="habilidades_sociais">👥 Habilidades Sociais - Interação e cooperação</option>
+                                <option value="regulacao_emocional">❤️ Regulação Emocional - Autoconhecimento e controle</option>
+                            </select>
+                        </div>
+
+                        <!-- Observações Especiais -->
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                <i data-lucide="clipboard" class="w-5 h-5 mr-2"></i>
+                                Observações Especiais
+                                <span class="ml-2 text-sm bg-gray-200 text-gray-700 px-2 py-1 rounded-full">Opcional</span>
+                            </h3>
+                            
+                            <textarea id="observacoes_especiais" name="observacoes_especiais" rows="3"
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+                                      placeholder="Descreva características específicas, interesses, dificuldades ou necessidades especiais da criança..."></textarea>
+                        </div>
+
+                        <!-- Botões de Ação -->
+                        <div class="flex space-x-4">
+                            <button type="submit" class="flex-1 bg-blue-600 text-white py-4 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center">
+                                <i data-lucide="wand-2" class="w-5 h-5 mr-2"></i>
+                                Gerar Atividade Completa
+                            </button>
+                            
+                            <button type="button" onclick="gerarPDF()" class="bg-green-600 text-white py-4 px-6 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center justify-center">
+                                <i data-lucide="download" class="w-5 h-5 mr-2"></i>
+                                PDF
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Loading -->
+                    <div id="loading" class="loading text-center py-8">
+                        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                        <p class="mt-2 text-gray-600">Gerando atividade personalizada...</p>
+                    </div>
+                </div>
+
+                <!-- Visualização da Atividade -->
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center">
+                            <div class="bg-green-100 p-3 rounded-full mr-4">
+                                <i data-lucide="eye" class="w-6 h-6 text-green-600"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-2xl font-bold text-gray-800">Atividade Personalizada</h2>
+                                <p class="text-gray-600">Orientações completas para implementação</p>
+                            </div>
+                        </div>
+                        
+                        <button onclick="imprimirAtividade()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center">
+                            <i data-lucide="printer" class="w-4 h-4 mr-2"></i>
+                            Imprimir
+                        </button>
+                    </div>
+
+                    <div id="atividade-resultado" class="space-y-6">
+                        <div class="text-center py-12 text-gray-500">
+                            <i data-lucide="lightbulb" class="w-16 h-16 mx-auto mb-4 text-gray-300"></i>
+                            <p class="text-lg">Preencha o formulário para gerar uma atividade personalizada</p>
+                            <p class="text-sm">Sistema baseado em evidências científicas e BNCC</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Guias para Professores -->
+        <div id="guias" class="tab-content">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Guia: Identificação de Perfis -->
+                <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                    <div class="bg-blue-100 p-3 rounded-full w-fit mb-4">
+                        <i data-lucide="search" class="w-6 h-6 text-blue-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">Como Identificar Perfis</h3>
+                    <p class="text-gray-600 mb-4">Guia prático para observar e identificar diferentes perfis de aprendizagem em sua sala de aula.</p>
+                    
+                    <div class="space-y-3">
+                        <div class="info-box p-3 rounded-lg">
+                            <h4 class="font-semibold text-blue-800">1. Observe o Comportamento Social</h4>
+                            <p class="text-sm text-blue-700">Busca contato ou prefere ficar sozinha? Inicia conversas ou espera ser abordada?</p>
+                        </div>
+                        
+                        <div class="info-box p-3 rounded-lg">
+                            <h4 class="font-semibold text-blue-800">2. Analise o Estilo de Aprendizagem</h4>
+                            <p class="text-sm text-blue-700">Aprende melhor vendo, ouvindo ou fazendo? Precisa de tempo para processar?</p>
+                        </div>
+                        
+                        <div class="info-box p-3 rounded-lg">
+                            <h4 class="font-semibold text-blue-800">3. Identifique Necessidades Especiais</h4>
+                            <p class="text-sm text-blue-700">Dificuldades persistentes? Comportamentos repetitivos? Reações sensoriais?</p>
+                        </div>
+                    </div>
+                    
+                    <button class="w-full mt-4 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        Ver Guia Completo
+                    </button>
+                </div>
+
+                <!-- Guia: Adaptação de Atividades -->
+                <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                    <div class="bg-green-100 p-3 rounded-full w-fit mb-4">
+                        <i data-lucide="settings" class="w-6 h-6 text-green-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">Adaptação de Atividades</h3>
+                    <p class="text-gray-600 mb-4">Estratégias práticas para adaptar atividades mantendo objetivos de aprendizagem.</p>
+                    
+                    <div class="space-y-3">
+                        <div class="sucesso-box p-3 rounded-lg">
+                            <h4 class="font-semibold text-green-800">Para Introvertidos</h4>
+                            <p class="text-sm text-green-700">Tempo para reflexão, respostas escritas, trabalho individual</p>
+                        </div>
+                        
+                        <div class="sucesso-box p-3 rounded-lg">
+                            <h4 class="font-semibold text-green-800">Para TEA</h4>
+                            <p class="text-sm text-green-700">Estrutura visual, rotinas consistentes, interesses especiais</p>
+                        </div>
+                        
+                        <div class="sucesso-box p-3 rounded-lg">
+                            <h4 class="font-semibold text-green-800">Para TDAH</h4>
+                            <p class="text-sm text-green-700">Movimento, pausas frequentes, tarefas segmentadas</p>
+                        </div>
+                    </div>
+                    
+                    <button class="w-full mt-4 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors">
+                        Ver Estratégias Completas
+                    </button>
+                </div>
+
+                <!-- Guia: Gestão de Sala Inclusiva -->
+                <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                    <div class="bg-purple-100 p-3 rounded-full w-fit mb-4">
+                        <i data-lucide="users" class="w-6 h-6 text-purple-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">Gestão de Sala Inclusiva</h3>
+                    <p class="text-gray-600 mb-4">Crie um ambiente onde a diversidade é valorizada e todos podem aprender.</p>
+                    
+                    <div class="space-y-3">
+                        <div class="orientacao-box p-3 rounded-lg">
+                            <h4 class="font-semibold text-yellow-800">Organização Física</h4>
+                            <p class="text-sm text-yellow-700">Diferentes espaços, áreas tranquilas, materiais acessíveis</p>
+                        </div>
+                        
+                        <div class="orientacao-box p-3 rounded-lg">
+                            <h4 class="font-semibold text-yellow-800">Rotinas Estruturadas</h4>
+                            <p class="text-sm text-yellow-700">Previsibilidade com flexibilidade, agenda visual, transições</p>
+                        </div>
+                        
+                        <div class="orientacao-box p-3 rounded-lg">
+                            <h4 class="font-semibold text-yellow-800">Comunicação Efetiva</h4>
+                            <p class="text-sm text-yellow-700">Linguagem clara, instruções visuais, verificação de compreensão</p>
+                        </div>
+                    </div>
+                    
+                    <button class="w-full mt-4 bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                        Ver Guia de Gestão
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Perfis de Crianças -->
+        <div id="perfis" class="tab-content">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <!-- Perfil: Neurotípica Extrovertida -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-blue-100 p-3 rounded-full mr-4">
+                            <i data-lucide="users" class="w-6 h-6 text-blue-600"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800">Criança Neurotípica Extrovertida</h3>
+                            <p class="text-gray-600">Busca interação social constante</p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-semibold text-gray-800 mb-2">🔍 Sinais de Identificação:</h4>
+                            <ul class="text-sm text-gray-600 space-y-1">
+                                <li>• Levanta a mão frequentemente</li>
+                                <li>• Inicia conversas com colegas</li>
+                                <li>• Prefere trabalhar em grupo</li>
+                                <li>• Fala enquanto resolve problemas</li>
+                            </ul>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-semibold text-gray-800 mb-2">📚 Estratégias de Ensino:</h4>
+                            <ul class="text-sm text-gray-600 space-y-1">
+                                <li>• Promova discussões em grupo</li>
+                                <li>• Use atividades colaborativas</li>
+                                <li>• Permita apresentações orais</li>
+                                <li>• Ofereça feedback verbal imediato</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="alerta-box p-3 rounded-lg">
+                            <h4 class="font-semibold text-red-800 mb-1">⚠️ Cuidados Especiais:</h4>
+                            <p class="text-sm text-red-700">Monitore para não dominar discussões. Ensine a ouvir os outros.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Perfil: TEA Nível 1 -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-indigo-100 p-3 rounded-full mr-4">
+                            <i data-lucide="puzzle" class="w-6 h-6 text-indigo-600"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800">Criança com TEA Nível 1</h3>
+                            <p class="text-gray-600">Necessita estrutura e rotinas</p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-semibold text-gray-800 mb-2">🔍 Sinais de Identificação:</h4>
+                            <ul class="text-sm text-gray-600 space-y-1">
+                                <li>• Conversa sobre temas específicos repetidamente</li>
+                                <li>• Tem dificuldade em fazer amigos</li>
+                                <li>• Segue rotinas rígidas</li>
+                                <li>• Reage fortemente a mudanças</li>
+                            </ul>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-semibold text-gray-800 mb-2">📚 Estratégias de Ensino:</h4>
+                            <ul class="text-sm text-gray-600 space-y-1">
+                                <li>• Mantenha rotinas consistentes</li>
+                                <li>• Use apoios visuais claros</li>
+                                <li>• Incorpore interesses especiais</li>
+                                <li>• Prepare mudanças com antecedência</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="alerta-box p-3 rounded-lg">
+                            <h4 class="font-semibold text-red-800 mb-1">⚠️ Cuidados Especiais:</h4>
+                            <p class="text-sm text-red-700">Monitore sobrecarga sensorial. Ofereça pausas quando necessário.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Adicionar mais perfis aqui... -->
+            </div>
+        </div>
+
+        <!-- Tab: Base Científica -->
+        <div id="recursos" class="tab-content">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Teorias Pedagógicas -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="bg-blue-100 p-3 rounded-full w-fit mb-4">
+                        <i data-lucide="book" class="w-6 h-6 text-blue-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">Teorias Pedagógicas</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="border-l-4 border-blue-500 pl-4">
+                            <h4 class="font-semibold text-gray-800">Jean Piaget</h4>
+                            <p class="text-sm text-gray-600">Desenvolvimento cognitivo em estágios sequenciais</p>
+                        </div>
+                        
+                        <div class="border-l-4 border-green-500 pl-4">
+                            <h4 class="font-semibold text-gray-800">Lev Vygotsky</h4>
+                            <p class="text-sm text-gray-600">Zona de Desenvolvimento Proximal e mediação social</p>
+                        </div>
+                        
+                        <div class="border-l-4 border-purple-500 pl-4">
+                            <h4 class="font-semibold text-gray-800">Maria Montessori</h4>
+                            <p class="text-sm text-gray-600">Ambiente preparado e autonomia da criança</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Neurociência Educacional -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="bg-green-100 p-3 rounded-full w-fit mb-4">
+                        <i data-lucide="brain" class="w-6 h-6 text-green-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">Neurociência Educacional</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="sucesso-box p-3 rounded-lg">
+                            <h4 class="font-semibold text-green-800">Plasticidade Cerebral</h4>
+                            <p class="text-sm text-green-700">Cérebro se adapta através de experiências repetidas</p>
+                        </div>
+                        
+                        <div class="sucesso-box p-3 rounded-lg">
+                            <h4 class="font-semibold text-green-800">Sistemas de Recompensa</h4>
+                            <p class="text-sm text-green-700">Feedback positivo ativa circuitos de motivação</p>
+                        </div>
+                        
+                        <div class="sucesso-box p-3 rounded-lg">
+                            <h4 class="font-semibold text-green-800">Processamento Multissensorial</h4>
+                            <p class="text-sm text-green-700">Múltiplas vias fortalecem aprendizagem</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BNCC e Evidências -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="bg-purple-100 p-3 rounded-full w-fit mb-4">
+                        <i data-lucide="award" class="w-6 h-6 text-purple-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">BNCC e Evidências</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="orientacao-box p-3 rounded-lg">
+                            <h4 class="font-semibold text-yellow-800">Base Nacional Comum Curricular</h4>
+                            <p class="text-sm text-yellow-700">Competências e habilidades integradas</p>
+                        </div>
+                        
+                        <div class="info-box p-3 rounded-lg">
+                            <h4 class="font-semibold text-blue-800">Evidências de Pesquisa</h4>
+                            <p class="text-sm text-blue-700">Estratégias validadas cientificamente</p>
+                        </div>
+                        
+                        <div class="alerta-box p-3 rounded-lg">
+                            <h4 class="font-semibold text-red-800">Meta-análises</h4>
+                            <p class="text-sm text-red-700">Eficácia comprovada de estratégias inclusivas</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <img src="/static/images/logo.png" alt="Clube da Mente" class="h-12 w-12 rounded-lg bg-white p-2">
+                    <div>
+                        <h3 class="text-lg font-bold">Clube da Mente</h3>
+                        <p class="text-gray-400">Sistema Completo de Planejamento Educacional</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm text-gray-400">Baseado em evidências científicas</p>
+                    <p class="text-xs text-gray-500">BNCC • Neurociência • Pedagogia Inclusiva</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Inicialização dos ícones Lucide
+        lucide.createIcons();
+
+        // Variáveis globais
+        let perfilSelecionado = null;
+        let atividadeAtual = null;
+
+        // Função para mostrar tabs
+        function showTab(tabName) {
+            // Esconder todas as tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remover classe ativa de todos os botões
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('border-blue-600', 'text-blue-600');
+                btn.classList.add('text-gray-600');
+            });
+            
+            // Mostrar tab selecionada
+            document.getElementById(tabName).classList.add('active');
+            
+            // Ativar botão correspondente
+            event.target.classList.remove('text-gray-600');
+            event.target.classList.add('border-blue-600', 'text-blue-600');
+        }
+
+        // Função para selecionar perfil
+        function selectPerfil(perfil, element) {
+            // Remover seleção anterior
+            document.querySelectorAll('.perfil-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Adicionar seleção atual
+            element.classList.add('selected');
+            
+            // Definir valor no input hidden
+            document.getElementById('perfil_crianca').value = perfil;
+            perfilSelecionado = perfil;
+        }
+
+        // Função para gerar atividade
+        document.getElementById('atividadeForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Mostrar loading
+            document.getElementById('loading').classList.add('active');
+            
+            // Coletar dados do formulário
+            const formData = new FormData(this);
+            const dados = Object.fromEntries(formData.entries());
+            
+            try {
+                const response = await fetch('/atividades_aprimoradas/gerar_atividade_completa', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(dados)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    atividadeAtual = result.atividade;
+                    exibirAtividade(result.atividade);
+                } else {
+                    alert('Erro ao gerar atividade: ' + result.error);
+                }
+            } catch (error) {
+                alert('Erro de conexão: ' + error.message);
+            } finally {
+                // Esconder loading
+                document.getElementById('loading').classList.remove('active');
+            }
+        });
+
+        // Função para exibir atividade
+        function exibirAtividade(atividade) {
+            const container = document.getElementById('atividade-resultado');
+            
+            container.innerHTML = `
+                <div class="space-y-6">
+                    <!-- Cabeçalho da Atividade -->
+                    <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-6 rounded-lg">
+                        <h3 class="text-2xl font-bold mb-2">${atividade.atividade_personalizada.titulo}</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                            <div>
+                                <span class="font-semibold">Criança:</span><br>
+                                ${atividade.informacoes_crianca.nome}
+                            </div>
+                            <div>
+                                <span class="font-semibold">Idade:</span><br>
+                                ${atividade.informacoes_crianca.idade} anos
+                            </div>
+                            <div>
+                                <span class="font-semibold">Perfil:</span><br>
+                                ${atividade.informacoes_crianca.perfil}
+                            </div>
+                            <div>
+                                <span class="font-semibold">Área:</span><br>
+                                ${atividade.informacoes_crianca.area_foco}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navegação das Seções -->
+                    <div class="flex flex-wrap gap-2 border-b">
+                        <button onclick="showSection('objetivos')" class="section-btn px-4 py-2 border-b-2 border-blue-600 text-blue-600 font-semibold">
+                            🎯 Objetivos
+                        </button>
+                        <button onclick="showSection('materiais')" class="section-btn px-4 py-2 text-gray-600 hover:text-blue-600">
+                            📦 Materiais
+                        </button>
+                        <button onclick="showSection('passo-a-passo')" class="section-btn px-4 py-2 text-gray-600 hover:text-blue-600">
+                            📋 Passo a Passo
+                        </button>
+                        <button onclick="showSection('orientacoes')" class="section-btn px-4 py-2 text-gray-600 hover:text-blue-600">
+                            👨‍🏫 Orientações
+                        </button>
+                        <button onclick="showSection('avaliacao')" class="section-btn px-4 py-2 text-gray-600 hover:text-blue-600">
+                            📊 Avaliação
+                        </button>
+                        <button onclick="showSection('familia')" class="section-btn px-4 py-2 text-gray-600 hover:text-blue-600">
+                            👨‍👩‍👧‍👦 Família
+                        </button>
+                    </div>
+
+                    <!-- Seções de Conteúdo -->
+                    <div id="section-objetivos" class="section-content">
+                        <div class="bg-blue-50 p-6 rounded-lg">
+                            <h4 class="text-lg font-bold text-blue-800 mb-4">🎯 Objetivos da Atividade</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <h5 class="font-semibold text-blue-700 mb-2">Objetivo Geral:</h5>
+                                    <p class="text-blue-600">${atividade.atividade_personalizada.objetivo_geral}</p>
+                                </div>
+                                <div>
+                                    <h5 class="font-semibold text-blue-700 mb-2">Objetivos Específicos:</h5>
+                                    <ul class="text-blue-600 space-y-1">
+                                        ${atividade.atividade_personalizada.objetivos_especificos.map(obj => `<li>• ${obj}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="section-materiais" class="section-content hidden">
+                        <div class="bg-green-50 p-6 rounded-lg">
+                            <h4 class="text-lg font-bold text-green-800 mb-4">📦 Materiais Necessários</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <h5 class="font-semibold text-green-700 mb-2">Essenciais:</h5>
+                                    <ul class="text-green-600 space-y-1">
+                                        ${atividade.materiais_detalhados.essenciais.map(material => `<li>• ${material}</li>`).join('')}
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h5 class="font-semibold text-green-700 mb-2">Adaptações para o Perfil:</h5>
+                                    <ul class="text-green-600 space-y-1">
+                                        ${atividade.materiais_detalhados.adaptacoes_perfil.map(adaptacao => `<li>• ${adaptacao}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Adicionar mais seções aqui... -->
+                </div>
+            `;
+        }
+
+        // Função para mostrar seções
+        function showSection(sectionName) {
+            // Esconder todas as seções
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Remover classe ativa de todos os botões
+            document.querySelectorAll('.section-btn').forEach(btn => {
+                btn.classList.remove('border-blue-600', 'text-blue-600');
+                btn.classList.add('text-gray-600');
+            });
+            
+            // Mostrar seção selecionada
+            document.getElementById('section-' + sectionName).classList.remove('hidden');
+            
+            // Ativar botão correspondente
+            event.target.classList.remove('text-gray-600');
+            event.target.classList.add('border-blue-600', 'text-blue-600');
+        }
+
+        // Função para gerar PDF
+        function gerarPDF() {
+            if (!atividadeAtual) {
+                alert('Gere uma atividade primeiro!');
+                return;
+            }
+            
+            // Implementar geração de PDF
+            alert('Funcionalidade de PDF em desenvolvimento');
+        }
+
+        // Função para imprimir atividade
+        function imprimirAtividade() {
+            if (!atividadeAtual) {
+                alert('Gere uma atividade primeiro!');
+                return;
+            }
+            
+            window.print();
+        }
+    </script>
+</body>
+</html>
+

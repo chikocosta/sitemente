@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 Dashboard - Sistema de Planejamento Educacional</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Fredoka', sans-serif; }
+        
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .gradient-card-1 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .gradient-card-2 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .gradient-card-3 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .gradient-card-4 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+        .gradient-card-5 { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+        .gradient-card-6 { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); }
+        
+        .card-hover { 
+            transition: all 0.3s ease; 
+            transform: translateY(0);
+            cursor: pointer;
+        }
+        .card-hover:hover { 
+            transform: translateY(-8px); 
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2); 
+        }
+        
+        .stats-card {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+        
+        .feature-card {
+            border-radius: 20px;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .quick-action {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .quick-action:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.05);
+        }
+        
+        .progress-bar {
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: rgba(255,255,255,0.8);
+            height: 8px;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-6 shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                        <span class="text-2xl">📊</span>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold">Sistema de Planejamento Educacional</h1>
+                        <p class="text-blue-100">Dashboard Principal - Clube da Mente</p>
+                    </div>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="/atividades" class="hover:text-blue-200 transition-colors">🎯 Atividades</a>
+                    <a href="/planejamento" class="hover:text-blue-200 transition-colors">📅 Planejamento</a>
+                    <a href="/adaptacoes" class="hover:text-blue-200 transition-colors">🌈 Adaptações</a>
+                    <a href="/relatorios" class="hover:text-blue-200 transition-colors">📈 Relatórios</a>
+                    <a href="/biblioteca" class="hover:text-blue-200 transition-colors">📚 Biblioteca</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8">
+        <!-- Welcome Section -->
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold text-gray-800 mb-4">Bem-vindo ao Futuro da Educação! 🚀</h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Sistema completo de planejamento criativo e personalizado para professores do ensino fundamental, 
+                com geração de conteúdo adaptado para crianças neurotípicas e neuroatípicas.
+            </p>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12 stats-grid">
+            <div class="stats-card p-6 text-center">
+                <div class="text-3xl mb-2">🎯</div>
+                <h3 class="text-2xl font-bold text-gray-800">1,247</h3>
+                <p class="text-gray-600">Atividades Geradas</p>
+            </div>
+            
+            <div class="stats-card p-6 text-center">
+                <div class="text-3xl mb-2">👥</div>
+                <h3 class="text-2xl font-bold text-gray-800">89</h3>
+                <p class="text-gray-600">Professores Ativos</p>
+            </div>
+            
+            <div class="stats-card p-6 text-center">
+                <div class="text-3xl mb-2">🌈</div>
+                <h3 class="text-2xl font-bold text-gray-800">456</h3>
+                <p class="text-gray-600">Adaptações Criadas</p>
+            </div>
+            
+            <div class="stats-card p-6 text-center">
+                <div class="text-3xl mb-2">📚</div>
+                <h3 class="text-2xl font-bold text-gray-800">98%</h3>
+                <p class="text-gray-600">Satisfação BNCC</p>
+            </div>
+        </div>
+
+        <!-- Main Features -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12 features-grid">
+            <!-- Gerador de Atividades -->
+            <div class="feature-card gradient-card-1 p-8 card-hover" onclick="window.location.href='/atividades'">
+                <div class="text-center">
+                    <div class="text-5xl mb-4">🎯</div>
+                    <h3 class="text-2xl font-bold mb-4">Gerador de Atividades</h3>
+                    <p class="mb-6">Crie atividades personalizadas com base científica para diferentes áreas de desenvolvimento</p>
+                    
+                    <div class="space-y-3">
+                        <div class="quick-action p-3 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <span>🧠 Desenvolvimento Cognitivo</span>
+                                <span class="text-sm">342 atividades</span>
+                            </div>
+                        </div>
+                        <div class="quick-action p-3 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <span>🤸 Desenvolvimento Motor</span>
+                                <span class="text-sm">298 atividades</span>
+                            </div>
+                        </div>
+                        <div class="quick-action p-3 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <span>👥 Desenvolvimento Social</span>
+                                <span class="text-sm">267 atividades</span>
+                            </div>
+                        </div>
+                        <div class="quick-action p-3 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <span>❤️ Desenvolvimento Emocional</span>
+                                <span class="text-sm">340 atividades</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Planejamento de Aulas -->
+            <div class="feature-card gradient-card-2 p-8 card-hover" onclick="window.location.href='/planejamento'">
+                <div class="text-center">
+                    <div class="text-5xl mb-4">📅</div>
+                    <h3 class="text-2xl font-bold mb-4">Planejamento de Aulas</h3>
+                    <p class="mb-6">Organize e estruture suas aulas com ferramentas avançadas de planejamento pedagógico</p>
+                    
+                    <div class="space-y-3">
+                        <div class="quick-action p-3 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <span>📋 Planos Semanais</span>
+                                <span class="text-sm">23 ativos</span>
+                            </div>
+                        </div>
+                        <div class="quick-action p-3 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <span>🎯 Objetivos BNCC</span>
+                                <span class="text-sm">156 mapeados</span>
+                            </div>
+                        </div>
+                        <div class="quick-action p-3 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <span>⏰ Cronogramas</span>
+                                <span class="text-sm">12 em andamento</span>
+                            </div>
+                        </div>
+                        <div class="quick-action p-3 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <span>📊 Avaliações</span>
+                                <span class="text-sm">89 realizadas</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Adaptações Neurodiversidade -->
+            <div class="feature-card gradient-card-3 p-8 card-hover" onclick="window.location.href='/adaptacoes'">
+                <div class="text-center">
+                    <div class="text-5xl mb-4">🌈</div>
+                    <h3 class="text-2xl font-bold mb-4">Adaptações Neurodiversidade</h3>
+                    <p class="mb-6">Personalize conteúdo para crianças neurotípicas e neuroatípicas com estratégias específicas</p>
+                    
+                    <div class="space-y-3">
+                        <div class="quick-action p-3 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <span>🧩 TEA (Autismo)</span>
+                                <span class="text-sm">127 adaptações</span>
+                            </div>
+                        </div>
+                        <div class="quick-action p-3 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <span>⚡ TDAH</span>
+                                <span class="text-sm">98 estratégias</span>
+                            </div>
+                        </div>
+                        <div class="quick-action p-3 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <span>📖 Dislexia</span>
+                                <span class="text-sm">76 recursos</span>
+                            </div>
+                        </div>
+                        <div class="quick-action p-3 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <span>🌟 Altas Habilidades</span>
+                                <span class="text-sm">54 desafios</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Relatórios e Análises -->
+            <div class="feature-card gradient-card-4 p-8 card-hover" onclick="window.location.href='/relatorios'">
+                <div class="text-center">
+                    <div class="text-5xl mb-4">📈</div>
+                    <h3 class="text-2xl font-bold mb-4">Relatórios e Análises</h3>
+                    <p class="mb-6">Acompanhe o progresso dos alunos com relatórios detalhados e análises pedagógicas</p>
+                    
+                    <div class="space-y-3">
+                        <div class="quick-action p-3 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <span>📊 Progresso Individual</span>
+                                <div class="progress-bar w-16 h-2">
+                                    <div class="progress-fill" style="width: 78%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="quick-action p-3 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <span>👥 Desempenho da Turma</span>
+                                <div class="progress-bar w-16 h-2">
+                                    <div class="progress-fill" style="width: 85%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="quick-action p-3 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <span>🎯 Objetivos BNCC</span>
+                                <div class="progress-bar w-16 h-2">
+                                    <div class="progress-fill" style="width: 92%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="quick-action p-3 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <span>🌈 Adaptações Efetivas</span>
+                                <div class="progress-bar w-16 h-2">
+                                    <div class="progress-fill" style="width: 89%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Biblioteca de Recursos -->
+            <div class="feature-card gradient-card-5 p-8 card-hover" onclick="window.location.href='/biblioteca'">
+                <div class="text-center">
+                    <div class="text-5xl mb-4">📚</div>
+                    <h3 class="text-2xl font-bold mb-4">Biblioteca de Recursos</h3>
+                    <p class="mb-6">Acesse uma vasta coleção de materiais educacionais e recursos pedagógicos</p>
+                    
+                    <div class="space-y-3">
+                        <div class="quick-action p-3 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <span>📖 Atividades Salvas</span>
+                                <span class="text-sm">234 itens</span>
+                            </div>
+                        </div>
+                        <div class="quick-action p-3 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <span>🎨 Materiais Visuais</span>
+                                <span class="text-sm">567 recursos</span>
+                            </div>
+                        </div>
+                        <div class="quick-action p-3 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <span>🔬 Base Científica</span>
+                                <span class="text-sm">89 estudos</span>
+                            </div>
+                        </div>
+                        <div class="quick-action p-3 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <span>📋 Templates</span>
+                                <span class="text-sm">45 modelos</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configurações e Perfil -->
+            <div class="feature-card gradient-card-6 p-8 card-hover" onclick="window.location.href='/perfil'">
+                <div class="text-center">
+                    <div class="text-5xl mb-4">⚙️</div>
+                    <h3 class="text-2xl font-bold mb-4">Perfil e Configurações</h3>
+                    <p class="mb-6">Personalize sua experiência e gerencie suas preferências pedagógicas</p>
+                    
+                    <div class="space-y-3">
+                        <div class="quick-action p-3 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <span>👤 Perfil Professor</span>
+                                <span class="text-sm">Completo</span>
+                            </div>
+                        </div>
+                        <div class="quick-action p-3 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <span>🏫 Turmas Ativas</span>
+                                <span class="text-sm">3 turmas</span>
+                            </div>
+                        </div>
+                        <div class="quick-action p-3 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <span>🎯 Preferências</span>
+                                <span class="text-sm">Configurado</span>
+                            </div>
+                        </div>
+                        <div class="quick-action p-3 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <span>🔔 Notificações</span>
+                                <span class="text-sm">Ativas</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6">📋 Atividade Recente</h3>
+            
+            <div class="space-y-4">
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                            <span class="text-blue-600">🎯</span>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold">Atividade de Matemática - João, 7 anos</h4>
+                            <p class="text-sm text-gray-600">Desenvolvimento cognitivo • TEA • Há 2 horas</p>
+                        </div>
+                    </div>
+                    <button class="text-blue-600 hover:text-blue-800">Ver detalhes</button>
+                </div>
+                
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                            <span class="text-green-600">📅</span>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold">Plano Semanal - Turma A</h4>
+                            <p class="text-sm text-gray-600">Planejamento • 5 atividades • Há 4 horas</p>
+                        </div>
+                    </div>
+                    <button class="text-blue-600 hover:text-blue-800">Ver detalhes</button>
+                </div>
+                
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                            <span class="text-purple-600">🌈</span>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold">Adaptação TDAH - Maria, 6 anos</h4>
+                            <p class="text-sm text-gray-600">Neurodiversidade • Atividade motora • Ontem</p>
+                        </div>
+                    </div>
+                    <button class="text-blue-600 hover:text-blue-800">Ver detalhes</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-2xl shadow-lg p-8">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6">⚡ Ações Rápidas</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <button onclick="window.location.href='/atividades'" 
+                        class="p-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all transform hover:scale-105">
+                    <div class="text-3xl mb-2">🎯</div>
+                    <h4 class="font-semibold">Nova Atividade</h4>
+                    <p class="text-sm opacity-90">Criar atividade personalizada</p>
+                </button>
+                
+                <button onclick="window.location.href='/planejamento'" 
+                        class="p-6 bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-xl hover:from-green-600 hover:to-teal-700 transition-all transform hover:scale-105">
+                    <div class="text-3xl mb-2">📅</div>
+                    <h4 class="font-semibold">Planejar Aula</h4>
+                    <p class="text-sm opacity-90">Estruturar nova aula</p>
+                </button>
+                
+                <button onclick="window.location.href='/adaptacoes'" 
+                        class="p-6 bg-gradient-to-r from-pink-500 to-rose-600 text-white rounded-xl hover:from-pink-600 hover:to-rose-700 transition-all transform hover:scale-105">
+                    <div class="text-3xl mb-2">🌈</div>
+                    <h4 class="font-semibold">Adaptar Conteúdo</h4>
+                    <p class="text-sm opacity-90">Personalizar para neurodiversidade</p>
+                </button>
+                
+                <button onclick="window.location.href='/relatorios'" 
+                        class="p-6 bg-gradient-to-r from-orange-500 to-yellow-600 text-white rounded-xl hover:from-orange-600 hover:to-yellow-700 transition-all transform hover:scale-105">
+                    <div class="text-3xl mb-2">📈</div>
+                    <h4 class="font-semibold">Ver Relatórios</h4>
+                    <p class="text-sm opacity-90">Acompanhar progresso</p>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-16">
+        <div class="container mx-auto px-4 text-center">
+            <div class="flex items-center justify-center space-x-4 mb-4">
+                <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                    <span class="text-sm">🧠</span>
+                </div>
+                <h3 class="text-xl font-bold">Clube da Mente</h3>
+            </div>
+            <p class="text-gray-400 mb-4">Sistema de Planejamento Educacional - Transformando a educação através da tecnologia</p>
+            <div class="flex justify-center space-x-6 text-sm">
+                <a href="#" class="hover:text-blue-400 transition-colors">Sobre</a>
+                <a href="#" class="hover:text-blue-400 transition-colors">Suporte</a>
+                <a href="#" class="hover:text-blue-400 transition-colors">Documentação</a>
+                <a href="#" class="hover:text-blue-400 transition-colors">Contato</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Animações e interatividade
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animar estatísticas
+            animateStats();
+            
+            // Atualizar dados em tempo real (simulado)
+            setInterval(updateStats, 30000);
+        });
+
+        function animateStats() {
+            const statsElements = document.querySelectorAll('.stats-card h3');
+            statsElements.forEach(element => {
+                const finalValue = parseInt(element.textContent.replace(/[^\d]/g, ''));
+                let currentValue = 0;
+                const increment = finalValue / 50;
+                
+                const timer = setInterval(() => {
+                    currentValue += increment;
+                    if (currentValue >= finalValue) {
+                        currentValue = finalValue;
+                        clearInterval(timer);
+                    }
+                    
+                    if (element.textContent.includes('%')) {
+                        element.textContent = Math.floor(currentValue) + '%';
+                    } else {
+                        element.textContent = Math.floor(currentValue).toLocaleString();
+                    }
+                }, 20);
+            });
+        }
+
+        function updateStats() {
+            // Simular atualização de dados em tempo real
+            console.log('Atualizando estatísticas...');
+        }
+
+        // Navegação rápida por teclado
+        document.addEventListener('keydown', function(e) {
+            if (e.altKey) {
+                switch(e.key) {
+                    case '1':
+                        window.location.href = '/atividades';
+                        break;
+                    case '2':
+                        window.location.href = '/planejamento';
+                        break;
+                    case '3':
+                        window.location.href = '/adaptacoes';
+                        break;
+                    case '4':
+                        window.location.href = '/relatorios';
+                        break;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+

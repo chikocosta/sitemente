@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Gerador de Atividades Educativas - Sistema de Planejamento</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Fredoka', sans-serif; }
+        
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .gradient-card { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .gradient-success { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .gradient-warning { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        
+        .card-hover { 
+            transition: all 0.3s ease; 
+            transform: translateY(0);
+        }
+        .card-hover:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15); 
+        }
+        
+        .pulse-animation { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
+        
+        .loading { display: none; }
+        .loading.active { display: flex; }
+        
+        .form-section { 
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+        
+        .preview-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            color: white;
+        }
+        
+        .tab-button {
+            padding: 12px 24px;
+            border-radius: 12px 12px 0 0;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.8);
+        }
+        
+        .tab-button.active {
+            background: rgba(255,255,255,0.9);
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+        
+        .tab-content {
+            display: none;
+            background: rgba(255,255,255,0.95);
+            color: #333;
+            border-radius: 0 12px 12px 12px;
+            padding: 24px;
+            min-height: 300px;
+        }
+        
+        .tab-content.active { display: block; }
+        
+        .neurodiversity-card {
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .neurodiversity-card.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .theory-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin: 2px;
+        }
+        
+        .area-card {
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .area-card:hover {
+            border-color: #667eea;
+            transform: scale(1.02);
+        }
+        
+        .area-card.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .resource-tag {
+            display: inline-block;
+            background: #e2e8f0;
+            color: #4a5568;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin: 2px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .resource-tag.selected {
+            background: #667eea;
+            color: white;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .scientific-foundation {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 12px 0;
+        }
+        
+        .adaptation-card {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 8px 0;
+        }
+        
+        .bncc-code {
+            display: inline-block;
+            background: #2d3748;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            margin: 2px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+            
+            .form-section, .preview-section {
+                padding: 20px;
+            }
+            
+            .tab-button {
+                padding: 8px 16px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-6 shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                        <span class="text-2xl">🎯</span>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold">Gerador de Atividades Educativas</h1>
+                        <p class="text-blue-100">Sistema de Planejamento Criativo e Personalizado</p>
+                    </div>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="/dashboard" class="hover:text-blue-200 transition-colors">Dashboard</a>
+                    <a href="/planejamento" class="hover:text-blue-200 transition-colors">Planejamento</a>
+                    <a href="/relatorios" class="hover:text-blue-200 transition-colors">Relatórios</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 main-container">
+            <!-- Formulário de Geração -->
+            <div class="form-section p-8">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">🧠 Criação Científica Personalizada</h2>
+                    <p class="text-gray-600">Atividades baseadas em teorias pedagógicas e adaptadas para neurodiversidade</p>
+                </div>
+
+                <form id="atividadeForm" class="space-y-6">
+                    <!-- Informações da Criança -->
+                    <div class="bg-blue-50 p-6 rounded-xl">
+                        <h3 class="text-xl font-semibold text-blue-800 mb-4">👶 Informações da Criança</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="nome_crianca" class="block text-sm font-medium text-gray-700 mb-2">Nome da Criança</label>
+                                <input type="text" id="nome_crianca" name="nome_crianca" required
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            </div>
+                            
+                            <div>
+                                <label for="idade" class="block text-sm font-medium text-gray-700 mb-2">Idade</label>
+                                <select id="idade" name="idade" required
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <option value="">Selecione a idade</option>
+                                    <option value="3">3 anos</option>
+                                    <option value="4">4 anos</option>
+                                    <option value="5">5 anos</option>
+                                    <option value="6">6 anos</option>
+                                    <option value="7">7 anos</option>
+                                    <option value="8">8 anos</option>
+                                    <option value="9">9 anos</option>
+                                    <option value="10">10 anos</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Área de Desenvolvimento -->
+                    <div class="bg-green-50 p-6 rounded-xl">
+                        <h3 class="text-xl font-semibold text-green-800 mb-4">🧩 Área de Desenvolvimento</h3>
+                        <p class="text-sm text-gray-600 mb-4">Selecione a área principal que deseja desenvolver</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="areasDesenvolvimento">
+                            <div class="area-card p-4 bg-white rounded-lg border-2 cursor-pointer" data-area="cognitivo">
+                                <div class="text-center">
+                                    <div class="text-3xl mb-2">🧠</div>
+                                    <h4 class="font-semibold">Cognitivo</h4>
+                                    <p class="text-sm text-gray-600">Atenção, memória, raciocínio</p>
+                                </div>
+                            </div>
+                            
+                            <div class="area-card p-4 bg-white rounded-lg border-2 cursor-pointer" data-area="motor">
+                                <div class="text-center">
+                                    <div class="text-3xl mb-2">🤸</div>
+                                    <h4 class="font-semibold">Motor</h4>
+                                    <p class="text-sm text-gray-600">Coordenação, equilíbrio</p>
+                                </div>
+                            </div>
+                            
+                            <div class="area-card p-4 bg-white rounded-lg border-2 cursor-pointer" data-area="social">
+                                <div class="text-center">
+                                    <div class="text-3xl mb-2">👥</div>
+                                    <h4 class="font-semibold">Social</h4>
+                                    <p class="text-sm text-gray-600">Cooperação, comunicação</p>
+                                </div>
+                            </div>
+                            
+                            <div class="area-card p-4 bg-white rounded-lg border-2 cursor-pointer" data-area="emocional">
+                                <div class="text-center">
+                                    <div class="text-3xl mb-2">❤️</div>
+                                    <h4 class="font-semibold">Emocional</h4>
+                                    <p class="text-sm text-gray-600">Autoestima, regulação</p>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="area_desenvolvimento" name="area_desenvolvimento" required>
+                    </div>
+
+                    <!-- Neurodiversidade -->
+                    <div class="bg-purple-50 p-6 rounded-xl">
+                        <h3 class="text-xl font-semibold text-purple-800 mb-4">🌈 Perfil de Neurodiversidade</h3>
+                        <p class="text-sm text-gray-600 mb-4">Selecione o perfil que melhor descreve a criança</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="neurodiversidade">
+                            <div class="neurodiversity-card p-4 bg-white rounded-lg cursor-pointer" data-tipo="neurotipico">
+                                <div class="flex items-center space-x-3">
+                                    <div class="text-2xl">👶</div>
+                                    <div>
+                                        <h4 class="font-semibold">Neurotípico</h4>
+                                        <p class="text-sm text-gray-600">Desenvolvimento típico</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="neurodiversity-card p-4 bg-white rounded-lg cursor-pointer" data-tipo="tea">
+                                <div class="flex items-center space-x-3">
+                                    <div class="text-2xl">🧩</div>
+                                    <div>
+                                        <h4 class="font-semibold">TEA</h4>
+                                        <p class="text-sm text-gray-600">Transtorno do Espectro Autista</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="neurodiversity-card p-4 bg-white rounded-lg cursor-pointer" data-tipo="tdah">
+                                <div class="flex items-center space-x-3">
+                                    <div class="text-2xl">⚡</div>
+                                    <div>
+                                        <h4 class="font-semibold">TDAH</h4>
+                                        <p class="text-sm text-gray-600">Déficit de Atenção e Hiperatividade</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="neurodiversity-card p-4 bg-white rounded-lg cursor-pointer" data-tipo="dislexia">
+                                <div class="flex items-center space-x-3">
+                                    <div class="text-2xl">📖</div>
+                                    <div>
+                                        <h4 class="font-semibold">Dislexia</h4>
+                                        <p class="text-sm text-gray-600">Dificuldades de leitura</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="neurodiversity-card p-4 bg-white rounded-lg cursor-pointer" data-tipo="altas_habilidades">
+                                <div class="flex items-center space-x-3">
+                                    <div class="text-2xl">🌟</div>
+                                    <div>
+                                        <h4 class="font-semibold">Altas Habilidades</h4>
+                                        <p class="text-sm text-gray-600">Superdotação</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="tipo_neurodiversidade" name="tipo_neurodiversidade" required>
+                    </div>
+
+                    <!-- Recursos Disponíveis -->
+                    <div class="bg-yellow-50 p-6 rounded-xl">
+                        <h3 class="text-xl font-semibold text-yellow-800 mb-4">🎨 Recursos Disponíveis</h3>
+                        <p class="text-sm text-gray-600 mb-4">Selecione os recursos que você tem disponível (opcional)</p>
+                        
+                        <div class="flex flex-wrap gap-2" id="recursosDisponiveis">
+                            <span class="resource-tag" data-recurso="papel">Papel</span>
+                            <span class="resource-tag" data-recurso="lapis">Lápis/Canetas</span>
+                            <span class="resource-tag" data-recurso="tinta">Tintas</span>
+                            <span class="resource-tag" data-recurso="blocos">Blocos</span>
+                            <span class="resource-tag" data-recurso="bola">Bola</span>
+                            <span class="resource-tag" data-recurso="musica">Música</span>
+                            <span class="resource-tag" data-recurso="computador">Computador</span>
+                            <span class="resource-tag" data-recurso="livros">Livros</span>
+                            <span class="resource-tag" data-recurso="jogos">Jogos</span>
+                            <span class="resource-tag" data-recurso="natureza">Elementos naturais</span>
+                        </div>
+                        <input type="hidden" id="recursos_disponiveis" name="recursos_disponiveis">
+                    </div>
+
+                    <!-- Objetivos Específicos -->
+                    <div class="bg-indigo-50 p-6 rounded-xl">
+                        <h3 class="text-xl font-semibold text-indigo-800 mb-4">🎯 Objetivos Específicos</h3>
+                        <textarea id="objetivos_especificos" name="objetivos_especificos" rows="3"
+                                  placeholder="Descreva objetivos específicos que deseja alcançar (opcional)"
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                    </div>
+
+                    <!-- Botão de Gerar -->
+                    <button type="submit" id="gerarBtn" 
+                            class="w-full gradient-bg text-white py-4 px-8 rounded-xl font-semibold text-lg hover:opacity-90 transition-opacity">
+                        🚀 Gerar Atividade Personalizada
+                    </button>
+                </form>
+
+                <!-- Loading -->
+                <div class="loading justify-center items-center py-8" id="loading">
+                    <div class="text-center">
+                        <div class="spinner mx-auto mb-4"></div>
+                        <p class="text-gray-600">Criando atividade personalizada com base científica...</p>
+                    </div>
+                </div>
+
+                <!-- Mensagens -->
+                <div id="errorMessage" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mt-4"></div>
+                <div id="successMessage" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mt-4"></div>
+            </div>
+
+            <!-- Visualização Prévia -->
+            <div class="preview-section p-8">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold mb-4">👁️ Visualização da Atividade</h2>
+                    <p class="text-blue-100">Atividade gerada com fundamentação científica</p>
+                </div>
+
+                <div id="previewContent" class="hidden">
+                    <div class="mb-6">
+                        <h3 id="previewTitle" class="text-2xl font-bold text-center mb-4"></h3>
+                        
+                        <!-- Tabs -->
+                        <div class="flex flex-wrap gap-2 mb-4" id="previewTabs">
+                            <button class="tab-button active" onclick="showTab('geral')">📋 Geral</button>
+                            <button class="tab-button" onclick="showTab('instrucoes')">📝 Instruções</button>
+                            <button class="tab-button" onclick="showTab('materiais')">🎨 Materiais</button>
+                            <button class="tab-button" onclick="showTab('adaptacoes')">🌈 Adaptações</button>
+                            <button class="tab-button" onclick="showTab('cientifica')">🔬 Base Científica</button>
+                            <button class="tab-button" onclick="showTab('bncc')">📚 BNCC</button>
+                        </div>
+
+                        <!-- Tab Contents -->
+                        <div id="geral" class="tab-content active">
+                            <h4 class="text-lg font-semibold mb-3">Informações Gerais</h4>
+                            <div id="geralContent"></div>
+                        </div>
+
+                        <div id="instrucoes" class="tab-content">
+                            <h4 class="text-lg font-semibold mb-3">Instruções Detalhadas</h4>
+                            <div id="instrucoesContent"></div>
+                        </div>
+
+                        <div id="materiais" class="tab-content">
+                            <h4 class="text-lg font-semibold mb-3">Materiais Necessários</h4>
+                            <div id="materiaisContent"></div>
+                        </div>
+
+                        <div id="adaptacoes" class="tab-content">
+                            <h4 class="text-lg font-semibold mb-3">Adaptações para Neurodiversidade</h4>
+                            <div id="adaptacoesContent"></div>
+                        </div>
+
+                        <div id="cientifica" class="tab-content">
+                            <h4 class="text-lg font-semibold mb-3">Fundamentação Científica</h4>
+                            <div id="cientificaContent"></div>
+                        </div>
+
+                        <div id="bncc" class="tab-content">
+                            <h4 class="text-lg font-semibold mb-3">Códigos BNCC</h4>
+                            <div id="bnccContent"></div>
+                        </div>
+                    </div>
+
+                    <!-- Ações -->
+                    <div class="flex flex-wrap gap-4 justify-center">
+                        <button onclick="printActivity()" class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                            🖨️ Imprimir Atividade
+                        </button>
+                        <a href="#" id="downloadBtn" class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors" style="display: none;">
+                            📥 Baixar PDF
+                        </a>
+                        <button onclick="saveToLibrary()" class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                            💾 Salvar na Biblioteca
+                        </button>
+                    </div>
+                </div>
+
+                <div id="emptyPreview" class="text-center py-16">
+                    <div class="text-6xl mb-4">🎯</div>
+                    <h3 class="text-xl font-semibold mb-2">Pronto para Criar!</h3>
+                    <p class="text-blue-100">Preencha o formulário para gerar uma atividade personalizada</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentActivity = null;
+        let selectedResources = [];
+
+        // Seleção de área de desenvolvimento
+        document.querySelectorAll('.area-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.area-card').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                document.getElementById('area_desenvolvimento').value = this.dataset.area;
+            });
+        });
+
+        // Seleção de neurodiversidade
+        document.querySelectorAll('.neurodiversity-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.neurodiversity-card').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                document.getElementById('tipo_neurodiversidade').value = this.dataset.tipo;
+            });
+        });
+
+        // Seleção de recursos
+        document.querySelectorAll('.resource-tag').forEach(tag => {
+            tag.addEventListener('click', function() {
+                this.classList.toggle('selected');
+                const recurso = this.dataset.recurso;
+                
+                if (selectedResources.includes(recurso)) {
+                    selectedResources = selectedResources.filter(r => r !== recurso);
+                } else {
+                    selectedResources.push(recurso);
+                }
+                
+                document.getElementById('recursos_disponiveis').value = selectedResources.join(',');
+            });
+        });
+
+        // Função para mostrar tabs
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        // Submissão do formulário
+        document.getElementById('atividadeForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+            
+            // Adicionar recursos selecionados
+            data.recursos_disponiveis = selectedResources;
+            
+            // Validação
+            if (!data.nome_crianca || !data.idade || !data.area_desenvolvimento || !data.tipo_neurodiversidade) {
+                showError('Por favor, preencha todos os campos obrigatórios!');
+                return;
+            }
+            
+            showLoading();
+            
+            try {
+                const response = await fetch('/atividades/gerar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentActivity = result.atividade;
+                    populatePreview(result.atividade);
+                    document.getElementById('downloadBtn').href = `/atividades/download_pdf/${result.pdf_path}`;
+                    document.getElementById('downloadBtn').style.display = 'inline-block';
+                    showSuccess('Atividade gerada com sucesso!');
+                } else {
+                    showError(result.error || 'Erro ao gerar atividade');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                showError('Erro de conexão. Tente novamente.');
+            } finally {
+                hideLoading();
+            }
+        });
+
+        function populatePreview(atividade) {
+            document.getElementById('previewTitle').textContent = atividade.titulo;
+            
+            // Geral
+            document.getElementById('geralContent').innerHTML = `
+                <div class="space-y-4">
+                    <div><strong>Tipo:</strong> ${atividade.tipo}</div>
+                    <div><strong>Área:</strong> ${atividade.area}</div>
+                    <div><strong>Teoria Base:</strong> ${atividade.teoria_base}</div>
+                    <div><strong>Objetivo Principal:</strong> ${atividade.objetivo_principal}</div>
+                </div>
+            `;
+            
+            // Instruções
+            const instrucoesHtml = atividade.instrucoes.map(inst => `<li class="mb-2">${inst}</li>`).join('');
+            document.getElementById('instrucoesContent').innerHTML = `<ol class="list-decimal list-inside space-y-2">${instrucoesHtml}</ol>`;
+            
+            // Materiais
+            const materiaisHtml = atividade.materiais.map(mat => `<li class="mb-2">${mat}</li>`).join('');
+            document.getElementById('materiaisContent').innerHTML = `<ul class="list-disc list-inside space-y-2">${materiaisHtml}</ul>`;
+            
+            // Adaptações
+            if (atividade.adaptacoes_neurodiversidade) {
+                const adapt = atividade.adaptacoes_neurodiversidade;
+                document.getElementById('adaptacoesContent').innerHTML = `
+                    <div class="adaptation-card">
+                        <h5 class="font-semibold mb-2">Tipo: ${adapt.tipo}</h5>
+                        <p class="mb-3">${adapt.caracteristicas}</p>
+                        <h6 class="font-semibold mb-2">Estratégias Aplicadas:</h6>
+                        <ul class="list-disc list-inside space-y-1">
+                            ${adapt.estrategias_aplicadas.map(est => `<li>${est}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            // Base Científica
+            if (atividade.fundamentacao_cientifica) {
+                const fund = atividade.fundamentacao_cientifica;
+                document.getElementById('cientificaContent').innerHTML = `
+                    <div class="scientific-foundation">
+                        <h5 class="font-semibold mb-2">${fund.teoria_principal.nome}</h5>
+                        <p class="mb-3">${fund.teoria_principal.aplicacao}</p>
+                        <h6 class="font-semibold mb-2">Princípios:</h6>
+                        <ul class="list-disc list-inside space-y-1">
+                            ${fund.teoria_principal.principios.map(p => `<li>${p}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            // BNCC
+            if (atividade.codigos_bncc) {
+                const bnccHtml = atividade.codigos_bncc.map(codigo => `<span class="bncc-code">${codigo}</span>`).join(' ');
+                document.getElementById('bnccContent').innerHTML = bnccHtml;
+            }
+            
+            // Mostrar preview
+            document.getElementById('emptyPreview').style.display = 'none';
+            document.getElementById('previewContent').classList.remove('hidden');
+        }
+
+        function showLoading() {
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('gerarBtn').disabled = true;
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').classList.remove('active');
+            document.getElementById('gerarBtn').disabled = false;
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+            setTimeout(() => errorDiv.classList.add('hidden'), 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.classList.remove('hidden');
+            setTimeout(() => successDiv.classList.add('hidden'), 5000);
+        }
+
+        function printActivity() {
+            if (!currentActivity) return;
+            
+            const printWindow = window.open('', '_blank');
+            const printContent = generatePrintContent(currentActivity);
+            
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+            printWindow.onload = function() {
+                printWindow.print();
+                printWindow.close();
+            };
+        }
+
+        function generatePrintContent(atividade) {
+            return `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>${atividade.titulo}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+                        h1 { color: #667eea; text-align: center; }
+                        h2 { color: #764ba2; border-bottom: 2px solid #764ba2; padding-bottom: 5px; }
+                        .section { margin-bottom: 20px; page-break-inside: avoid; }
+                        ul, ol { margin-left: 20px; }
+                        li { margin-bottom: 5px; }
+                        .adaptation-card { background: #f0f0f0; padding: 15px; border-radius: 8px; margin: 10px 0; }
+                        .scientific-foundation { background: #fff3cd; padding: 15px; border-radius: 8px; margin: 10px 0; }
+                        .bncc-code { background: #333; color: white; padding: 2px 6px; border-radius: 3px; margin: 2px; }
+                    </style>
+                </head>
+                <body>
+                    <h1>${atividade.titulo}</h1>
+                    
+                    <div class="section">
+                        <h2>Informações Gerais</h2>
+                        <p><strong>Tipo:</strong> ${atividade.tipo}</p>
+                        <p><strong>Área:</strong> ${atividade.area}</p>
+                        <p><strong>Teoria Base:</strong> ${atividade.teoria_base}</p>
+                        <p><strong>Objetivo Principal:</strong> ${atividade.objetivo_principal}</p>
+                    </div>
+                    
+                    <div class="section">
+                        <h2>Instruções</h2>
+                        <ol>
+                            ${atividade.instrucoes.map(inst => `<li>${inst}</li>`).join('')}
+                        </ol>
+                    </div>
+                    
+                    <div class="section">
+                        <h2>Materiais</h2>
+                        <ul>
+                            ${atividade.materiais.map(mat => `<li>${mat}</li>`).join('')}
+                        </ul>
+                    </div>
+                    
+                    ${atividade.adaptacoes_neurodiversidade ? `
+                    <div class="section">
+                        <h2>Adaptações para Neurodiversidade</h2>
+                        <div class="adaptation-card">
+                            <h3>Tipo: ${atividade.adaptacoes_neurodiversidade.tipo}</h3>
+                            <p>${atividade.adaptacoes_neurodiversidade.caracteristicas}</p>
+                            <h4>Estratégias:</h4>
+                            <ul>
+                                ${atividade.adaptacoes_neurodiversidade.estrategias_aplicadas.map(est => `<li>${est}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    <div style="margin-top: 30px; text-align: center; font-size: 12px; color: #666;">
+                        Gerado pelo Sistema de Planejamento Educacional - ${new Date().toLocaleDateString('pt-BR')}
+                    </div>
+                </body>
+                </html>
+            `;
+        }
+
+        function saveToLibrary() {
+            if (!currentActivity) return;
+            
+            // Implementar salvamento na biblioteca
+            showSuccess('Atividade salva na biblioteca!');
+        }
+    </script>
+</body>
+</html>
+

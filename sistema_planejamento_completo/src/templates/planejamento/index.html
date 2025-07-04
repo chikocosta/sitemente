@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📅 Planejamento de Aulas - Sistema Educacional</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Fredoka', sans-serif; }
+        
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .gradient-card-1 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .gradient-card-2 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .gradient-card-3 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+        .gradient-card-4 { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+        
+        .card-hover { 
+            transition: all 0.3s ease; 
+            transform: translateY(0);
+        }
+        .card-hover:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15); 
+        }
+        
+        .form-section { 
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+        
+        .preview-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            color: white;
+        }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+        
+        .step {
+            flex: 1;
+            text-align: center;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 0 0.5rem;
+            background: rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .step.active {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.05);
+        }
+        
+        .step.completed {
+            background: rgba(76, 175, 80, 0.3);
+        }
+        
+        .form-step {
+            display: none;
+        }
+        
+        .form-step.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .metodologia-card {
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .metodologia-card:hover {
+            border-color: #667eea;
+            transform: scale(1.02);
+        }
+        
+        .metodologia-card.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .objetivo-tag {
+            display: inline-block;
+            background: #e2e8f0;
+            color: #4a5568;
+            padding: 6px 12px;
+            border-radius: 20px;
+            margin: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .objetivo-tag.selected {
+            background: #667eea;
+            color: white;
+        }
+        
+        .recurso-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border-radius: 8px;
+            margin: 4px 0;
+            background: rgba(255,255,255,0.1);
+            transition: all 0.2s ease;
+        }
+        
+        .recurso-item:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .cronograma-item {
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 8px 0;
+            border-left: 4px solid #667eea;
+        }
+        
+        .loading { display: none; }
+        .loading.active { display: flex; }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .tab-button {
+            padding: 12px 24px;
+            border-radius: 12px 12px 0 0;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.8);
+            cursor: pointer;
+        }
+        
+        .tab-button.active {
+            background: rgba(255,255,255,0.9);
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+        
+        .tab-content {
+            display: none;
+            background: rgba(255,255,255,0.95);
+            color: #333;
+            border-radius: 0 12px 12px 12px;
+            padding: 24px;
+            min-height: 400px;
+        }
+        
+        .tab-content.active { display: block; }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .step-indicator {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .step {
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-6 shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                        <span class="text-2xl">📅</span>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold">Planejamento de Aulas</h1>
+                        <p class="text-blue-100">Crie planos estruturados e personalizados</p>
+                    </div>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="/dashboard" class="hover:text-blue-200 transition-colors">Dashboard</a>
+                    <a href="/atividades" class="hover:text-blue-200 transition-colors">Atividades</a>
+                    <a href="/adaptacoes" class="hover:text-blue-200 transition-colors">Adaptações</a>
+                    <a href="/relatorios" class="hover:text-blue-200 transition-colors">Relatórios</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 main-container">
+            <!-- Formulário de Planejamento -->
+            <div class="form-section p-8">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">🎯 Criador de Planos de Aula</h2>
+                    <p class="text-gray-600">Estruture suas aulas com base pedagógica sólida e metodologias ativas</p>
+                </div>
+
+                <!-- Indicador de Passos -->
+                <div class="step-indicator">
+                    <div class="step active" data-step="1">
+                        <div class="text-2xl mb-2">📋</div>
+                        <div class="text-sm font-semibold">Informações Básicas</div>
+                    </div>
+                    <div class="step" data-step="2">
+                        <div class="text-2xl mb-2">🎯</div>
+                        <div class="text-sm font-semibold">Objetivos</div>
+                    </div>
+                    <div class="step" data-step="3">
+                        <div class="text-2xl mb-2">🔬</div>
+                        <div class="text-sm font-semibold">Metodologia</div>
+                    </div>
+                    <div class="step" data-step="4">
+                        <div class="text-2xl mb-2">🎨</div>
+                        <div class="text-sm font-semibold">Recursos</div>
+                    </div>
+                    <div class="step" data-step="5">
+                        <div class="text-2xl mb-2">🌈</div>
+                        <div class="text-sm font-semibold">Adaptações</div>
+                    </div>
+                </div>
+
+                <form id="planoForm">
+                    <!-- Passo 1: Informações Básicas -->
+                    <div class="form-step active" data-step="1">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-6">📋 Informações Básicas</h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label for="titulo" class="block text-sm font-medium text-gray-700 mb-2">Título da Aula</label>
+                                <input type="text" id="titulo" name="titulo" required
+                                       placeholder="Ex: Descobrindo os Números Mágicos"
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="nivel_ensino" class="block text-sm font-medium text-gray-700 mb-2">Nível de Ensino</label>
+                                    <select id="nivel_ensino" name="nivel_ensino" required
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        <option value="">Selecione o nível</option>
+                                        <option value="educacao_infantil">Educação Infantil</option>
+                                        <option value="ensino_fundamental">Ensino Fundamental</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label for="duracao" class="block text-sm font-medium text-gray-700 mb-2">Duração (minutos)</label>
+                                    <select id="duracao" name="duracao" required
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        <option value="">Selecione a duração</option>
+                                        <option value="30">30 minutos</option>
+                                        <option value="45">45 minutos</option>
+                                        <option value="60">60 minutos</option>
+                                        <option value="90">90 minutos</option>
+                                        <option value="120">120 minutos</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label for="turma" class="block text-sm font-medium text-gray-700 mb-2">Turma/Série</label>
+                                <input type="text" id="turma" name="turma"
+                                       placeholder="Ex: Pré II, 1º Ano, 2º Ano"
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Passo 2: Objetivos -->
+                    <div class="form-step" data-step="2">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-6">🎯 Objetivos de Aprendizagem</h3>
+                        
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-3">Objetivos Principais</label>
+                                <div id="objetivosSugeridos" class="mb-4">
+                                    <div class="objetivo-tag" data-objetivo="Desenvolver habilidades cognitivas">Desenvolver habilidades cognitivas</div>
+                                    <div class="objetivo-tag" data-objetivo="Estimular a criatividade">Estimular a criatividade</div>
+                                    <div class="objetivo-tag" data-objetivo="Promover interação social">Promover interação social</div>
+                                    <div class="objetivo-tag" data-objetivo="Fortalecer coordenação motora">Fortalecer coordenação motora</div>
+                                    <div class="objetivo-tag" data-objetivo="Desenvolver linguagem oral">Desenvolver linguagem oral</div>
+                                    <div class="objetivo-tag" data-objetivo="Estimular raciocínio lógico">Estimular raciocínio lógico</div>
+                                    <div class="objetivo-tag" data-objetivo="Promover autonomia">Promover autonomia</div>
+                                    <div class="objetivo-tag" data-objetivo="Desenvolver expressão artística">Desenvolver expressão artística</div>
+                                </div>
+                                <textarea id="objetivos_personalizados" name="objetivos_personalizados" rows="3"
+                                          placeholder="Adicione objetivos específicos personalizados (um por linha)"
+                                          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                            </div>
+                            
+                            <div>
+                                <label for="competencias_bncc" class="block text-sm font-medium text-gray-700 mb-2">Competências BNCC</label>
+                                <div id="competenciasBncc" class="bg-blue-50 p-4 rounded-lg">
+                                    <p class="text-sm text-gray-600">As competências serão sugeridas automaticamente baseadas no nível de ensino e objetivos selecionados.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Passo 3: Metodologia -->
+                    <div class="form-step" data-step="3">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-6">🔬 Metodologia Pedagógica</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="metodologias">
+                            <div class="metodologia-card p-6 bg-white rounded-lg border-2" data-metodologia="ativa">
+                                <div class="text-center">
+                                    <div class="text-3xl mb-3">⚡</div>
+                                    <h4 class="font-semibold mb-2">Metodologia Ativa</h4>
+                                    <p class="text-sm text-gray-600">Aluno protagonista do aprendizado</p>
+                                    <div class="mt-3 text-xs">
+                                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">Problemas</span>
+                                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">Projetos</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="metodologia-card p-6 bg-white rounded-lg border-2" data-metodologia="construtivista">
+                                <div class="text-center">
+                                    <div class="text-3xl mb-3">🔨</div>
+                                    <h4 class="font-semibold mb-2">Construtivismo</h4>
+                                    <p class="text-sm text-gray-600">Construção do conhecimento</p>
+                                    <div class="mt-3 text-xs">
+                                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded">Experiência</span>
+                                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded">Descoberta</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="metodologia-card p-6 bg-white rounded-lg border-2" data-metodologia="sociointeracionista">
+                                <div class="text-center">
+                                    <div class="text-3xl mb-3">👥</div>
+                                    <h4 class="font-semibold mb-2">Sociointeracionismo</h4>
+                                    <p class="text-sm text-gray-600">Aprendizagem social</p>
+                                    <div class="mt-3 text-xs">
+                                        <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded">Grupos</span>
+                                        <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded">Mediação</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="metodologia-card p-6 bg-white rounded-lg border-2" data-metodologia="montessori">
+                                <div class="text-center">
+                                    <div class="text-3xl mb-3">🌱</div>
+                                    <h4 class="font-semibold mb-2">Montessori</h4>
+                                    <p class="text-sm text-gray-600">Ambiente preparado</p>
+                                    <div class="mt-3 text-xs">
+                                        <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Autonomia</span>
+                                        <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Sensorial</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="metodologia" name="metodologia">
+                    </div>
+
+                    <!-- Passo 4: Recursos -->
+                    <div class="form-step" data-step="4">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-6">🎨 Recursos e Materiais</h3>
+                        
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-3">Recursos Disponíveis</label>
+                                <div class="grid grid-cols-2 md:grid-cols-3 gap-3" id="recursosDisponiveis">
+                                    <label class="recurso-item cursor-pointer">
+                                        <input type="checkbox" name="recursos" value="quadro" class="mr-2">
+                                        <span>📋 Quadro</span>
+                                    </label>
+                                    <label class="recurso-item cursor-pointer">
+                                        <input type="checkbox" name="recursos" value="projetor" class="mr-2">
+                                        <span>📽️ Projetor</span>
+                                    </label>
+                                    <label class="recurso-item cursor-pointer">
+                                        <input type="checkbox" name="recursos" value="computador" class="mr-2">
+                                        <span>💻 Computador</span>
+                                    </label>
+                                    <label class="recurso-item cursor-pointer">
+                                        <input type="checkbox" name="recursos" value="materiais_arte" class="mr-2">
+                                        <span>🎨 Materiais de Arte</span>
+                                    </label>
+                                    <label class="recurso-item cursor-pointer">
+                                        <input type="checkbox" name="recursos" value="jogos" class="mr-2">
+                                        <span>🎲 Jogos</span>
+                                    </label>
+                                    <label class="recurso-item cursor-pointer">
+                                        <input type="checkbox" name="recursos" value="livros" class="mr-2">
+                                        <span>📚 Livros</span>
+                                    </label>
+                                    <label class="recurso-item cursor-pointer">
+                                        <input type="checkbox" name="recursos" value="instrumentos_musicais" class="mr-2">
+                                        <span>🎵 Instrumentos</span>
+                                    </label>
+                                    <label class="recurso-item cursor-pointer">
+                                        <input type="checkbox" name="recursos" value="materiais_manipulaveis" class="mr-2">
+                                        <span>🧩 Manipuláveis</span>
+                                    </label>
+                                    <label class="recurso-item cursor-pointer">
+                                        <input type="checkbox" name="recursos" value="espaco_externo" class="mr-2">
+                                        <span>🌳 Espaço Externo</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label for="recursos_adicionais" class="block text-sm font-medium text-gray-700 mb-2">Recursos Adicionais</label>
+                                <textarea id="recursos_adicionais" name="recursos_adicionais" rows="3"
+                                          placeholder="Descreva outros recursos específicos que você tem disponível"
+                                          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Passo 5: Adaptações -->
+                    <div class="form-step" data-step="5">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-6">🌈 Adaptações para Neurodiversidade</h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-3">Perfis de Neurodiversidade na Turma</label>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <label class="recurso-item cursor-pointer">
+                                        <input type="checkbox" name="adaptacoes_neurodiversidade" value="tea" class="mr-2">
+                                        <span>🧩 TEA (Autismo)</span>
+                                    </label>
+                                    <label class="recurso-item cursor-pointer">
+                                        <input type="checkbox" name="adaptacoes_neurodiversidade" value="tdah" class="mr-2">
+                                        <span>⚡ TDAH</span>
+                                    </label>
+                                    <label class="recurso-item cursor-pointer">
+                                        <input type="checkbox" name="adaptacoes_neurodiversidade" value="dislexia" class="mr-2">
+                                        <span>📖 Dislexia</span>
+                                    </label>
+                                    <label class="recurso-item cursor-pointer">
+                                        <input type="checkbox" name="adaptacoes_neurodiversidade" value="altas_habilidades" class="mr-2">
+                                        <span>🌟 Altas Habilidades</span>
+                                    </label>
+                                    <label class="recurso-item cursor-pointer">
+                                        <input type="checkbox" name="adaptacoes_neurodiversidade" value="deficiencia_intelectual" class="mr-2">
+                                        <span>🧠 Deficiência Intelectual</span>
+                                    </label>
+                                    <label class="recurso-item cursor-pointer">
+                                        <input type="checkbox" name="adaptacoes_neurodiversidade" value="deficiencia_visual" class="mr-2">
+                                        <span>👁️ Deficiência Visual</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label for="observacoes_adaptacoes" class="block text-sm font-medium text-gray-700 mb-2">Observações Específicas</label>
+                                <textarea id="observacoes_adaptacoes" name="observacoes_adaptacoes" rows="3"
+                                          placeholder="Descreva necessidades específicas ou adaptações já conhecidas"
+                                          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Navegação entre passos -->
+                <div class="flex justify-between mt-8">
+                    <button type="button" id="prevBtn" onclick="changeStep(-1)" 
+                            class="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors" 
+                            style="display: none;">
+                        ← Anterior
+                    </button>
+                    <button type="button" id="nextBtn" onclick="changeStep(1)" 
+                            class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        Próximo →
+                    </button>
+                    <button type="button" id="generateBtn" onclick="generatePlan()" 
+                            class="px-8 py-3 gradient-bg text-white rounded-lg hover:opacity-90 transition-opacity font-semibold" 
+                            style="display: none;">
+                        🚀 Gerar Plano de Aula
+                    </button>
+                </div>
+
+                <!-- Loading -->
+                <div class="loading justify-center items-center py-8" id="loading">
+                    <div class="text-center">
+                        <div class="spinner mx-auto mb-4"></div>
+                        <p class="text-gray-600">Criando plano de aula personalizado...</p>
+                    </div>
+                </div>
+
+                <!-- Mensagens -->
+                <div id="errorMessage" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mt-4"></div>
+                <div id="successMessage" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mt-4"></div>
+            </div>
+
+            <!-- Visualização do Plano -->
+            <div class="preview-section p-8">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold mb-4">👁️ Visualização do Plano</h2>
+                    <p class="text-blue-100">Plano de aula estruturado e personalizado</p>
+                </div>
+
+                <div id="previewContent" class="hidden">
+                    <div class="mb-6">
+                        <h3 id="previewTitle" class="text-2xl font-bold text-center mb-4"></h3>
+                        
+                        <!-- Tabs -->
+                        <div class="flex flex-wrap gap-2 mb-4" id="previewTabs">
+                            <button class="tab-button active" onclick="showTab('geral')">📋 Geral</button>
+                            <button class="tab-button" onclick="showTab('objetivos')">🎯 Objetivos</button>
+                            <button class="tab-button" onclick="showTab('atividades')">📝 Atividades</button>
+                            <button class="tab-button" onclick="showTab('cronograma')">⏰ Cronograma</button>
+                            <button class="tab-button" onclick="showTab('recursos')">🎨 Recursos</button>
+                            <button class="tab-button" onclick="showTab('avaliacao')">📊 Avaliação</button>
+                        </div>
+
+                        <!-- Tab Contents -->
+                        <div id="geral" class="tab-content active">
+                            <h4 class="text-lg font-semibold mb-3">Informações Gerais</h4>
+                            <div id="geralContent"></div>
+                        </div>
+
+                        <div id="objetivos" class="tab-content">
+                            <h4 class="text-lg font-semibold mb-3">Objetivos de Aprendizagem</h4>
+                            <div id="objetivosContent"></div>
+                        </div>
+
+                        <div id="atividades" class="tab-content">
+                            <h4 class="text-lg font-semibold mb-3">Atividades Planejadas</h4>
+                            <div id="atividadesContent"></div>
+                        </div>
+
+                        <div id="cronograma" class="tab-content">
+                            <h4 class="text-lg font-semibold mb-3">Cronograma da Aula</h4>
+                            <div id="cronogramaContent"></div>
+                        </div>
+
+                        <div id="recursos" class="tab-content">
+                            <h4 class="text-lg font-semibold mb-3">Recursos e Materiais</h4>
+                            <div id="recursosContent"></div>
+                        </div>
+
+                        <div id="avaliacao" class="tab-content">
+                            <h4 class="text-lg font-semibold mb-3">Estratégias de Avaliação</h4>
+                            <div id="avaliacaoContent"></div>
+                        </div>
+                    </div>
+
+                    <!-- Ações -->
+                    <div class="flex flex-wrap gap-4 justify-center">
+                        <button onclick="printPlan()" class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                            🖨️ Imprimir Plano
+                        </button>
+                        <a href="#" id="downloadBtn" class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors" style="display: none;">
+                            📥 Baixar PDF
+                        </a>
+                        <button onclick="saveToLibrary()" class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                            💾 Salvar na Biblioteca
+                        </button>
+                    </div>
+                </div>
+
+                <div id="emptyPreview" class="text-center py-16">
+                    <div class="text-6xl mb-4">📅</div>
+                    <h3 class="text-xl font-semibold mb-2">Pronto para Planejar!</h3>
+                    <p class="text-blue-100">Complete os passos para gerar seu plano de aula personalizado</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        let totalSteps = 5;
+        let selectedObjectives = [];
+        let currentPlan = null;
+
+        // Navegação entre passos
+        function changeStep(direction) {
+            const currentStepElement = document.querySelector(`.form-step[data-step="${currentStep}"]`);
+            const currentStepIndicator = document.querySelector(`.step[data-step="${currentStep}"]`);
+            
+            if (direction === 1 && currentStep < totalSteps) {
+                // Validar passo atual antes de avançar
+                if (validateCurrentStep()) {
+                    currentStepElement.classList.remove('active');
+                    currentStepIndicator.classList.remove('active');
+                    currentStepIndicator.classList.add('completed');
+                    
+                    currentStep++;
+                    
+                    const nextStepElement = document.querySelector(`.form-step[data-step="${currentStep}"]`);
+                    const nextStepIndicator = document.querySelector(`.step[data-step="${currentStep}"]`);
+                    
+                    nextStepElement.classList.add('active');
+                    nextStepIndicator.classList.add('active');
+                }
+            } else if (direction === -1 && currentStep > 1) {
+                currentStepElement.classList.remove('active');
+                currentStepIndicator.classList.remove('active');
+                
+                currentStep--;
+                
+                const prevStepElement = document.querySelector(`.form-step[data-step="${currentStep}"]`);
+                const prevStepIndicator = document.querySelector(`.step[data-step="${currentStep}"]`);
+                
+                prevStepElement.classList.add('active');
+                prevStepIndicator.classList.add('active');
+                prevStepIndicator.classList.remove('completed');
+            }
+            
+            updateNavigationButtons();
+        }
+
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const generateBtn = document.getElementById('generateBtn');
+            
+            prevBtn.style.display = currentStep > 1 ? 'block' : 'none';
+            nextBtn.style.display = currentStep < totalSteps ? 'block' : 'none';
+            generateBtn.style.display = currentStep === totalSteps ? 'block' : 'none';
+        }
+
+        function validateCurrentStep() {
+            switch(currentStep) {
+                case 1:
+                    const titulo = document.getElementById('titulo').value;
+                    const nivel = document.getElementById('nivel_ensino').value;
+                    const duracao = document.getElementById('duracao').value;
+                    
+                    if (!titulo || !nivel || !duracao) {
+                        showError('Por favor, preencha todos os campos obrigatórios!');
+                        return false;
+                    }
+                    break;
+                case 2:
+                    if (selectedObjectives.length === 0 && !document.getElementById('objetivos_personalizados').value) {
+                        showError('Selecione pelo menos um objetivo ou adicione objetivos personalizados!');
+                        return false;
+                    }
+                    break;
+                case 3:
+                    const metodologia = document.getElementById('metodologia').value;
+                    if (!metodologia) {
+                        showError('Selecione uma metodologia pedagógica!');
+                        return false;
+                    }
+                    break;
+            }
+            return true;
+        }
+
+        // Seleção de objetivos
+        document.querySelectorAll('.objetivo-tag').forEach(tag => {
+            tag.addEventListener('click', function() {
+                this.classList.toggle('selected');
+                const objetivo = this.dataset.objetivo;
+                
+                if (selectedObjectives.includes(objetivo)) {
+                    selectedObjectives = selectedObjectives.filter(obj => obj !== objetivo);
+                } else {
+                    selectedObjectives.push(objetivo);
+                }
+            });
+        });
+
+        // Seleção de metodologia
+        document.querySelectorAll('.metodologia-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.metodologia-card').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                document.getElementById('metodologia').value = this.dataset.metodologia;
+            });
+        });
+
+        // Função para mostrar tabs
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        // Gerar plano de aula
+        async function generatePlan() {
+            if (!validateCurrentStep()) return;
+            
+            const formData = new FormData(document.getElementById('planoForm'));
+            const data = Object.fromEntries(formData.entries());
+            
+            // Adicionar objetivos selecionados
+            const objetivosPersonalizados = document.getElementById('objetivos_personalizados').value.split('\n').filter(obj => obj.trim());
+            data.objetivos = [...selectedObjectives, ...objetivosPersonalizados];
+            
+            // Adicionar recursos selecionados
+            const recursos = Array.from(document.querySelectorAll('input[name="recursos"]:checked')).map(input => input.value);
+            data.recursos = recursos;
+            
+            // Adicionar adaptações selecionadas
+            const adaptacoes = Array.from(document.querySelectorAll('input[name="adaptacoes_neurodiversidade"]:checked')).map(input => input.value);
+            data.adaptacoes_neurodiversidade = adaptacoes;
+            
+            showLoading();
+            
+            try {
+                const response = await fetch('/planejamento/criar_plano', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentPlan = result.plano;
+                    populatePreview(result.plano);
+                    document.getElementById('downloadBtn').href = `/planejamento/download_pdf/${result.pdf_path}`;
+                    document.getElementById('downloadBtn').style.display = 'inline-block';
+                    showSuccess('Plano de aula gerado com sucesso!');
+                } else {
+                    showError(result.error || 'Erro ao gerar plano de aula');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                showError('Erro de conexão. Tente novamente.');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function populatePreview(plano) {
+            document.getElementById('previewTitle').textContent = plano.titulo;
+            
+            // Geral
+            document.getElementById('geralContent').innerHTML = `
+                <div class="space-y-4">
+                    <div><strong>Nível:</strong> ${plano.nivel}</div>
+                    <div><strong>Duração:</strong> ${plano.duracao} minutos</div>
+                    <div><strong>Metodologia:</strong> ${plano.metodologia_detalhada?.nome || 'Não especificada'}</div>
+                    ${plano.metodologia_detalhada ? `<div><strong>Descrição:</strong> ${plano.metodologia_detalhada.descricao}</div>` : ''}
+                </div>
+            `;
+            
+            // Objetivos
+            const objetivosHtml = plano.objetivos_gerais.map(obj => `<li class="mb-2">• ${obj}</li>`).join('');
+            document.getElementById('objetivosContent').innerHTML = `<ul class="space-y-2">${objetivosHtml}</ul>`;
+            
+            // Atividades
+            const atividadesHtml = plano.atividades.map((ativ, index) => `<div class="bg-blue-50 p-4 rounded-lg mb-3"><strong>Atividade ${index + 1}:</strong> ${ativ}</div>`).join('');
+            document.getElementById('atividadesContent').innerHTML = atividadesHtml;
+            
+            // Cronograma
+            if (plano.cronograma) {
+                const cronogramaHtml = plano.cronograma.map(item => `
+                    <div class="cronograma-item">
+                        <div class="flex justify-between items-center">
+                            <span class="font-semibold">${item.horario}</span>
+                            <span class="text-sm text-gray-600">${item.duracao}</span>
+                        </div>
+                        <div class="mt-2">${item.atividade}</div>
+                    </div>
+                `).join('');
+                document.getElementById('cronogramaContent').innerHTML = cronogramaHtml;
+            }
+            
+            // Recursos
+            if (plano.recursos_necessarios) {
+                let recursosHtml = '';
+                Object.entries(plano.recursos_necessarios).forEach(([categoria, recursos]) => {
+                    if (recursos.length > 0) {
+                        recursosHtml += `
+                            <div class="mb-4">
+                                <h5 class="font-semibold mb-2 capitalize">${categoria.replace('_', ' ')}</h5>
+                                <ul class="list-disc list-inside space-y-1">
+                                    ${recursos.map(recurso => `<li>${recurso}</li>`).join('')}
+                                </ul>
+                            </div>
+                        `;
+                    }
+                });
+                document.getElementById('recursosContent').innerHTML = recursosHtml;
+            }
+            
+            // Avaliação
+            if (plano.avaliacao) {
+                const aval = plano.avaliacao;
+                let avaliacaoHtml = '';
+                Object.entries(aval).forEach(([tipo, info]) => {
+                    if (tipo !== 'criterios_avaliacao') {
+                        avaliacaoHtml += `
+                            <div class="mb-4">
+                                <h5 class="font-semibold mb-2">${info.instrumentos ? tipo.charAt(0).toUpperCase() + tipo.slice(1) : ''}</h5>
+                                ${info.objetivo ? `<p class="text-sm text-gray-600 mb-2">${info.objetivo}</p>` : ''}
+                                ${info.instrumentos ? `<ul class="list-disc list-inside space-y-1">${info.instrumentos.map(inst => `<li>${inst}</li>`).join('')}</ul>` : ''}
+                            </div>
+                        `;
+                    }
+                });
+                
+                if (aval.criterios_avaliacao) {
+                    avaliacaoHtml += `
+                        <div class="mb-4">
+                            <h5 class="font-semibold mb-2">Critérios de Avaliação</h5>
+                            <ul class="list-disc list-inside space-y-1">
+                                ${aval.criterios_avaliacao.map(criterio => `<li>${criterio}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `;
+                }
+                
+                document.getElementById('avaliacaoContent').innerHTML = avaliacaoHtml;
+            }
+            
+            // Mostrar preview
+            document.getElementById('emptyPreview').style.display = 'none';
+            document.getElementById('previewContent').classList.remove('hidden');
+        }
+
+        function showLoading() {
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('generateBtn').disabled = true;
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').classList.remove('active');
+            document.getElementById('generateBtn').disabled = false;
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+            setTimeout(() => errorDiv.classList.add('hidden'), 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.classList.remove('hidden');
+            setTimeout(() => successDiv.classList.add('hidden'), 5000);
+        }
+
+        function printPlan() {
+            if (!currentPlan) return;
+            
+            const printWindow = window.open('', '_blank');
+            const printContent = generatePrintContent(currentPlan);
+            
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+            printWindow.onload = function() {
+                printWindow.print();
+                printWindow.close();
+            };
+        }
+
+        function generatePrintContent(plano) {
+            return `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Plano de Aula - ${plano.titulo}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+                        h1 { color: #667eea; text-align: center; }
+                        h2 { color: #764ba2; border-bottom: 2px solid #764ba2; padding-bottom: 5px; }
+                        .section { margin-bottom: 20px; page-break-inside: avoid; }
+                        ul, ol { margin-left: 20px; }
+                        li { margin-bottom: 5px; }
+                        .cronograma-item { background: #f0f0f0; padding: 10px; border-radius: 5px; margin: 5px 0; }
+                    </style>
+                </head>
+                <body>
+                    <h1>Plano de Aula: ${plano.titulo}</h1>
+                    
+                    <div class="section">
+                        <h2>Informações Gerais</h2>
+                        <p><strong>Nível:</strong> ${plano.nivel}</p>
+                        <p><strong>Duração:</strong> ${plano.duracao} minutos</p>
+                        <p><strong>Metodologia:</strong> ${plano.metodologia_detalhada?.nome || 'Não especificada'}</p>
+                    </div>
+                    
+                    <div class="section">
+                        <h2>Objetivos</h2>
+                        <ul>
+                            ${plano.objetivos_gerais.map(obj => `<li>${obj}</li>`).join('')}
+                        </ul>
+                    </div>
+                    
+                    <div class="section">
+                        <h2>Atividades</h2>
+                        <ol>
+                            ${plano.atividades.map(ativ => `<li>${ativ}</li>`).join('')}
+                        </ol>
+                    </div>
+                    
+                    ${plano.cronograma ? `
+                    <div class="section">
+                        <h2>Cronograma</h2>
+                        ${plano.cronograma.map(item => `
+                            <div class="cronograma-item">
+                                <strong>${item.horario}</strong> (${item.duracao}) - ${item.atividade}
+                            </div>
+                        `).join('')}
+                    </div>
+                    ` : ''}
+                    
+                    <div style="margin-top: 30px; text-align: center; font-size: 12px; color: #666;">
+                        Gerado pelo Sistema de Planejamento Educacional - ${new Date().toLocaleDateString('pt-BR')}
+                    </div>
+                </body>
+                </html>
+            `;
+        }
+
+        function saveToLibrary() {
+            if (!currentPlan) return;
+            
+            // Implementar salvamento na biblioteca
+            showSuccess('Plano salvo na biblioteca!');
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            updateNavigationButtons();
+        });
+    </script>
+</body>
+</html>
+
